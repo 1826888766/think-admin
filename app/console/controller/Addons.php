@@ -4,6 +4,7 @@ declare (strict_types = 1);
 namespace app\console\controller;
 
 use app\common\controller\ConsoleBase;
+use app\common\controller\Response;
 use think\facade\View;
 
 /**
@@ -19,12 +20,13 @@ class Addons extends ConsoleBase
      *
      * @Author 马良 1826888766@qq.com
      * @DateTime 2020-12-23 14:00:21
-     * @return void
      */
     public function index()
     {
-        $addons = $this->load();
-        $this->assign('list',$addons);
+        if($this->request->isAjax()){
+            $addons = $this->load();
+            return Response::layui($addons);
+        }
         return $this->fetch();
     }
 

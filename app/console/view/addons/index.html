@@ -1,0 +1,27 @@
+<div class="layui-card">
+    <div class="layui-card-body">
+        <div class="layui-form-item layui-form-pane" id="mySearch"></div>
+
+        <table class="layui-table" id="myTable"></table>
+    </div>
+</div>
+
+<script>
+    layui.use(['table', "ml"], function () {
+        var ml = layui.ml;
+        ml.render({
+            elem: "#myTable",
+            search_elem: "#mySearch",
+            url: 'index',
+            cols: [[
+                {'field': "title", 'title': "插件名称", "search": true},
+                {'field': "name", 'title': "插件标识"},
+                {'field': "version", 'title': "插件版本", "search": true},
+                {'field': "description", 'title': "插件简介"},
+                {'field': "author", 'title': "插件作者"},
+                {'field': "status", 'title': "插件状态", "search": true},
+                {'field': "tools", 'title': "操作",}
+            ]],
+        })
+    })
+</script>

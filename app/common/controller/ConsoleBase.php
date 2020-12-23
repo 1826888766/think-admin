@@ -1,26 +1,31 @@
-<?php 
+<?php
+
 namespace app\common\controller;
 
 use app\BaseController;
 use think\facade\View;
+
 /**
  * 控制台基础控制器
  *
  * @Author 马良 1826888766@qq.com
  * @DateTime 2020-12-23 09:57:03
  */
-class ConsoleBase extends BaseController{
+class ConsoleBase extends BaseController
+{
 
     use \think\Jump;
+
     /**
      * 视图实例
      * @var \think\View
      */
     protected $view;
-    
+
     protected $checkLogin = true;
 
     protected $checkAuth = true;
+
     /**
      * 初始化操作
      *
@@ -29,8 +34,10 @@ class ConsoleBase extends BaseController{
      */
     public function initialize()
     {
-        $this->initView();
-       
+        if (!$this->request->isAjax()){
+            $this->initView();
+        }
+
     }
 
     /**
@@ -43,32 +50,32 @@ class ConsoleBase extends BaseController{
     private function initView($iframe = 1)
     {
         $this->view = View::instance();
-        $is_iframe = $this->request->param('iframe',0);
-        if($is_iframe == 1){
+        $is_iframe = $this->request->param('iframe', 0);
+        if ($is_iframe == 1) {
             $this->view->layout('iframe');
-        }else{
+        } else {
             $this->view->layout('layout');
-            if($iframe == 1){
+            if ($iframe == 1) {
                 // 是iframe布局
                 $this->openIframe();
             }
         }
-       
-        $this->assign('script',"");
-        $this->assign('iframe',$iframe);
+
+        $this->assign('script', "");
+        $this->assign('iframe', $iframe);
     }
 
     private function openIframe()
     {
-        if($this->request->controller(true) == "index" && $this->request->action(true)=="index"){
-            $redirect_url = $this->request->param('redirect_url','');
-            if($redirect_url){
-                $this->assign('script',"addtab('$redirect_url');");
+        if ($this->request->controller(true) == "index" && $this->request->action(true) == "index") {
+            $redirect_url = $this->request->param('redirect_url', '');
+            if ($redirect_url) {
+                $this->assign('script', "addtab('$redirect_url');");
             }
-        }else{
-            $this->redirect(url('console/index/index'),302,['redirect_url'=>$this->request->url()]);
+        } else {
+            $this->redirect(url('console/index/index'), 302, ['redirect_url' => $this->request->url()]);
         }
-       
+
     }
 
     /**
@@ -78,12 +85,13 @@ class ConsoleBase extends BaseController{
      * @DateTime 2020-12-23 10:00:06
      * @param string $template
      * @param array $vars
-     * @return void
+     * @return string
      */
-    public function fetch($template="",$vars = [])
+    public function fetch($template = "", $vars = []): string
     {
-       return  $this->view->fetch($template,$vars);
+        return $this->view->fetch($template, $vars);
     }
+
     /**
      * 渲染内容
      *
@@ -91,11 +99,11 @@ class ConsoleBase extends BaseController{
      * @DateTime 2020-12-23 13:42:32
      * @param string $content
      * @param array $vars
-     * @return void
+     * @return string
      */
-    public function display($content="",$vars = [])
+    public function display($content = "", $vars = []): string
     {
-        return  $this->view->fetch($content,$vars);
+        return $this->view->display($content, $vars);
     }
 
     /**
@@ -106,9 +114,9 @@ class ConsoleBase extends BaseController{
      * @param mixed $value
      * @return \think\View
      */
-    public function assign($name,$value = null)
+    public function assign($name, $value = null): \think\View
     {
-        return  $this->view->assign($name,$value);
+        return $this->view->assign($name, $value);
     }
 
     /**
@@ -119,8 +127,8 @@ class ConsoleBase extends BaseController{
      * @param string $type
      * @return \think\View
      */
-    public function engine($type = 'Think')
+    public function engine($type = 'Think'): \think\View
     {
-       return $this->view = View::engine($type);
+        return $this->view = View::engine($type);
     }
 }
