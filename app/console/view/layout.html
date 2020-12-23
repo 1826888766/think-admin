@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+  <title>后台基础插件系统</title>
+  {load rel="stylesheet" href="/static/lib/layui/css/layui.css"}
+  {load rel="stylesheet" href="/static/css/common.css"}
+  {load href="/static/lib/layui/layui.js"}
+  {load href="/static/js/common.js"}
+
+</head>
+<body class="layui-layout-body">
+<div class="layui-layout layui-layout-admin">
+    {include file="template:header" /}
+    {include file="template:side" /}
+    <div class="layui-body">
+      {switch $iframe}
+          {case 1}
+          <!-- iframe布局 -->
+          <div class="layui-tab layui-tab-brief" lay-allowClose="true" lay-filter="myIframe" style="margin: 0;">
+            <ul class="layui-tab-title">
+              <li class="layui-this home">欢迎页</li>
+            </ul>
+            <div class="layui-tab-content iframe-list">
+              <div class="layui-tab-item layui-show">
+                <iframe class="iframe" src="{:url('welcome')}?iframe=1" frameborder="0"></iframe>
+              </div>
+            </div>
+          </div>
+          {/case}
+          {default /}
+          <!-- 单页布局 -->
+          {include file="template:crumb" /}
+          <div>
+            {__CONTENT__}
+          </div>
+      {/switch}
+      
+    </div>
+</div>
+
+<script src="">
+  
+  {$script|raw}
+</script>
+</body>
+</html>
