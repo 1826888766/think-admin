@@ -5,6 +5,7 @@ namespace app\common\controller;
 use app\BaseController;
 use app\common\model\Module;
 use think\facade\View;
+use think\Model;
 
 /**
  * 控制台基础控制器
@@ -23,10 +24,22 @@ class ConsoleBase extends BaseController
      * @var \think\View
      */
     protected $view;
-
+    protected $param = [];
     protected $checkLogin = true;
     protected $checkAuth = true;
-    private $formField = [];
+
+    protected $formField = [];
+    // 模型
+    /**
+     * @var Model
+     */
+    protected $model = "";
+    // 验证器
+    protected $validate = "";
+    // 添加验证场景
+    protected $validateAddScene = "";
+    // 编辑验证场景
+    protected $validateEditScene = "";
 
     /**
      * 初始化操作
@@ -40,7 +53,10 @@ class ConsoleBase extends BaseController
             $this->initView();
             $this->initMenu();
         }
-
+        $this->param = request()->param();
+        if ($this->model) {
+            $this->model = model($this->model);
+        }
     }
 
     /**
@@ -83,6 +99,16 @@ class ConsoleBase extends BaseController
 
     public function add()
     {
+        if ($this->request->isAjax()) {
+
+            $scene = $this->validateAddScene ? ":" . $this->validateAddScene : "";
+            $error = $this->validate($this->param, $this->validate . $scene);
+            if (true !== $error) {
+                return Response::fail(1, $error);
+            }
+            $data = $this->model->create($this->param);
+            return Response::success($data);
+        }
         $this->assign('formConfig', [
             'action' => $this->request->action(),
             'field' => $this->formField,
@@ -92,13 +118,25 @@ class ConsoleBase extends BaseController
         return $this->fetch('template:form');
     }
 
-    public function edit()
+    public function edit($id)
     {
+        if ($this->request->isAjax()) {
+            if ($this->validate) {
+                $scene = $this->validateAddScene ? ":" . $this->validateAddScene : "";
+                $error = $this->validate($this->param, $this->validate . $scene);
+                if (true !== $error) {
+                    return Response::fail(1, $error);
+                }
+            }
+            $data = $this->model->where('id', $this->param['id'])->update($this->param);
+            return Response::success($data);
+        }
+        $data = $this->model->where(['id' => $id])->find();
         $this->assign('formConfig', [
             'action' => $this->request->action(),
             'field' => $this->formField,
             'method' => 'POST',
-            'data' => []
+            'data' => $data
         ]);
         return $this->fetch('template:form');
     }
@@ -123,7 +161,7 @@ class ConsoleBase extends BaseController
      * @DateTime 2020-12-23 10:00:06
      *
      * @param string $template
-     * @param array  $vars
+     * @param array $vars
      *
      * @return string
      */
@@ -139,7 +177,7 @@ class ConsoleBase extends BaseController
      * @DateTime 2020-12-23 13:42:32
      *
      * @param string $content
-     * @param array  $vars
+     * @param array $vars
      *
      * @return string
      */
@@ -155,7 +193,7 @@ class ConsoleBase extends BaseController
      * @DateTime 2020-12-23 13:42:02
      *
      * @param string|array $name
-     * @param mixed        $value
+     * @param mixed $value
      *
      * @return \think\View
      */

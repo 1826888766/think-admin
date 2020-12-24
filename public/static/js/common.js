@@ -1,6 +1,7 @@
-var element, $;
-layui.use(['element', 'jquery'], function () {
+var element, $, form;
+layui.use(['element', 'jquery', 'form'], function () {
     element = layui.element;
+    form = layui.form;
     $ = layui.jquery;
     // 渲染菜单
     if (typeof menus !== "undefined") {
@@ -34,7 +35,48 @@ layui.use(['element', 'jquery'], function () {
         renderModules(menus);
         renderMenus(menus[0] ? menus[0].menu : [])
     }
+
+    form.on("submit(mlFormSubmit)", function (obj) {
+        var action = $(obj.form).attr('action'), timeout = function () {
+            setTimeout(function () {
+                $(obj.elem).text('保存').prop('disabled', false).removeClass('layui-btn-danger')
+            }, 1500)
+        };
+        $(obj.elem).text('提交中...').prop('disabled', true).addClass('layui-btn-disabled')
+        $.ajax({
+            url: action,
+            method: "POST",
+            data: obj.field,
+            success: function (res) {
+                $(obj.elem).text(res.msg).removeClass('layui-btn-disabled')
+                if (res.code == 0) {
+                    parent.window.layer.closeAll()
+                }
+                timeout()
+            },
+            error: function (err) {
+                $(obj.elem).text('请求出错').addClass('layui-btn-danger').removeClass('layui-btn-disabled')
+                timeout()
+            }
+        })
+
+
+        return false;
+    })
 })
+
+function layerOpen(url, title) {
+    parent.layer.open({
+        content: setUrlParams(url),
+        type: 2,
+        title: title,
+        area: ["1200px", "750px"]
+    })
+}
+
+function back() {
+    parent.layer.closeAll()
+}
 
 function setUrlParams(url, param) {
     var params = ["iframe=" + iframe];
