@@ -1,5 +1,7 @@
+var element, $;
 layui.use(['element', 'jquery'], function () {
-    var element = layui.element, $ = layui.jquery;
+    element = layui.element;
+    $ = layui.jquery;
     // 监听导航点击
     element.on('nav(mySlide)', function (elem) {
         var data = elem.data()
@@ -9,16 +11,74 @@ layui.use(['element', 'jquery'], function () {
         }
         var title = data.title || elem.text();
         var id = hex_md5(href);
+        var dom = $(".layui-tab-title li[lay-id='" + id + "']");
+        if (dom.length) {
+            element.tabChange("myIframe", id)
+            $("#" + id)[0].contentWindow.location.reload(true);
+            return
+        }
         element.tabAdd("myIframe", {
             title: title,
-            content: "<iframe class=\"iframe\" src=" + href + " frameborder=\"0\"></iframe>",
+            content: "<iframe id='" + id + "' class=\"iframe\" src=" + href + " frameborder=\"0\"></iframe>",
             id: id
         });
         element.tabChange("myIframe", id)
     });
-
+    element.on('nav(myModule)', function (elem) {
+        var data = elem.data()
+        var index = data.index;
+        renderMenus(menus[index] ? menus[index].menu : [])
+    });
+    // 渲染菜单
+    renderModules(menus);
+    renderMenus(menus[0] ? menus[0].menu : [])
 })
 
+
+function renderModules(modules) {
+    var html = "";
+
+    layui.$.each(modules, function (index) {
+        html += '<li class="layui-nav-item"><a data-id="' + this.id + '" data-index="' + index + '" href="javascript:;">' + this.name + '</a></li>'
+    })
+    layui.$("#myModule").html(html);
+    element.render('nav', 'myModule')
+}
+
+function renderMenus(menus, is_child) {
+    var html = "";
+    layui.$.each(menus, function () {
+        if (is_child) {
+            html += '<dl class="layui-nav-child">';
+            if (this.target === '_blank') {
+                html += '<dd><a target="_blank" href="' + this.url + '">' + this.name + '</a></dd>'
+            } else {
+                html += '<dd><a href="javascript:void(0);" data-href="' + this.url + '">' + this.name + '</a>';
+                if (layui.$.isArray(this.child)) {
+                    html += renderMenus(this.child, true);
+                }
+            }
+            html += '</dd></dl>';
+        } else {
+            html += '<li class="layui-nav-item layui-nav-itemed">';
+            if (this.target === '_blank') {
+                html += '<a target="_blank" href="' + this.url + '">' + this.name + '</a>'
+            } else {
+                html += '<a data-href="' + this.url + '" href = "javascript:;" > ' + this.name + ' </a>';
+                if (layui.$.isArray(this.child)) {
+                    html += renderMenus(this.child, true);
+                }
+            }
+            html += '</li>';
+        }
+    })
+    if (is_child) {
+        return html;
+    }
+    layui.$("#mySlide").html(html);
+    element.render('nav', 'mySlide')
+
+}
 
 /*
  * A JavaScript implementation of the RSA Data Security, Inc. MD5 Message
@@ -34,7 +94,6 @@ layui.use(['element', 'jquery'], function () {
  * the server-side, but the defaults work in most cases.
  */
 var hexcase = 0;  /* hex output format. 0 - lowercase; 1 - uppercase        */
-var b64pad = ""; /* base-64 pad character. "=" for strict RFC compliance   */
 var chrsz = 8;  /* bits per input character. 8 - ASCII; 16 - Unicode      */
 
 /*
@@ -43,33 +102,6 @@ var chrsz = 8;  /* bits per input character. 8 - ASCII; 16 - Unicode      */
  */
 function hex_md5(s) {
     return binl2hex(core_md5(str2binl(s), s.length * chrsz));
-}
-
-function b64_md5(s) {
-    return binl2b64(core_md5(str2binl(s), s.length * chrsz));
-}
-
-function str_md5(s) {
-    return binl2str(core_md5(str2binl(s), s.length * chrsz));
-}
-
-function hex_hmac_md5(key, data) {
-    return binl2hex(core_hmac_md5(key, data));
-}
-
-function b64_hmac_md5(key, data) {
-    return binl2b64(core_hmac_md5(key, data));
-}
-
-function str_hmac_md5(key, data) {
-    return binl2str(core_hmac_md5(key, data));
-}
-
-/*
- * Perform a simple self-test to see if the VM is working
- */
-function md5_vm_test() {
-    return hex_md5("abc") == "900150983cd24fb0d6963f7d28e17f72";
 }
 
 /*
@@ -192,23 +224,6 @@ function md5_ii(a, b, c, d, x, s, t) {
 }
 
 /*
- * Calculate the HMAC-MD5, of a key and some data
- */
-function core_hmac_md5(key, data) {
-    var bkey = str2binl(key);
-    if (bkey.length > 16) bkey = core_md5(bkey, key.length * chrsz);
-
-    var ipad = Array(16), opad = Array(16);
-    for (var i = 0; i < 16; i++) {
-        ipad[i] = bkey[i] ^ 0x36363636;
-        opad[i] = bkey[i] ^ 0x5C5C5C5C;
-    }
-
-    var hash = core_md5(ipad.concat(str2binl(data)), 512 + data.length * chrsz);
-    return core_md5(opad.concat(hash), 512 + 128);
-}
-
-/*
  * Add integers, wrapping at 2^32. This uses 16-bit operations internally
  * to work around bugs in some JS interpreters.
  */
@@ -238,17 +253,6 @@ function str2binl(str) {
 }
 
 /*
- * Convert an array of little-endian words to a string
- */
-function binl2str(bin) {
-    var str = "";
-    var mask = (1 << chrsz) - 1;
-    for (var i = 0; i < bin.length * 32; i += chrsz)
-        str += String.fromCharCode((bin[i >> 5] >>> (i % 32)) & mask);
-    return str;
-}
-
-/*
  * Convert an array of little-endian words to a hex string.
  */
 function binl2hex(binarray) {
@@ -257,24 +261,6 @@ function binl2hex(binarray) {
     for (var i = 0; i < binarray.length * 4; i++) {
         str += hex_tab.charAt((binarray[i >> 2] >> ((i % 4) * 8 + 4)) & 0xF) +
             hex_tab.charAt((binarray[i >> 2] >> ((i % 4) * 8)) & 0xF);
-    }
-    return str;
-}
-
-/*
- * Convert an array of little-endian words to a base-64 string
- */
-function binl2b64(binarray) {
-    var tab = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/";
-    var str = "";
-    for (var i = 0; i < binarray.length * 4; i += 3) {
-        var triplet = (((binarray[i >> 2] >> 8 * (i % 4)) & 0xFF) << 16)
-            | (((binarray[i + 1 >> 2] >> 8 * ((i + 1) % 4)) & 0xFF) << 8)
-            | ((binarray[i + 2 >> 2] >> 8 * ((i + 2) % 4)) & 0xFF);
-        for (var j = 0; j < 4; j++) {
-            if (i * 8 + j * 6 > binarray.length * 32) str += b64pad;
-            else str += tab.charAt((triplet >> 6 * (3 - j)) & 0x3F);
-        }
     }
     return str;
 }

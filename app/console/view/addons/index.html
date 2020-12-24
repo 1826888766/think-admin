@@ -1,36 +1,50 @@
 <div class="layui-card">
     <div class="layui-card-body">
-        <div class="layui-form-item layui-form-pane" id="mySearch"></div>
+        <div class="layui-form layui-form-pane" id="mySearch"></div>
         <table class="layui-table" id="myTable"></table>
     </div>
 </div>
 <script type="text/html" id="toolsTpl">
     <div class="layui-btn-group">
         {{# if (d.status == 1) { }}
-        <span class="layui-btn layui-btn-sm layui-btn-normal">设置</span>
-        <span class="layui-btn layui-btn-sm layui-btn-warm">卸载</span>
-        {{# } else if (d.status == 0) {  }}
-        <span class="layui-btn layui-btn-sm layui-btn-danger">删除</span>
-        <span class="layui-btn layui-btn-sm">安装</span>
+        {{# if (d.setting == 1) { }}
+        <span class="layui-btn layui-btn-sm layui-btn-normal" onclick="setting('{{d.id}}');">设置</span>
+        {{# } }}
+        <span class="layui-btn layui-btn-sm layui-btn-warm" onclick="uninstall('{{d.id}}');">卸载</span>
+        {{# } else if (d.status == 0) { }}
+        <span class="layui-btn layui-btn-sm" onclick="install('{{d.id}}');">安装</span>
+        <span class="layui-btn layui-btn-sm layui-btn-danger" onclick="del('{{d.id}}');">删除</span>
         {{# } }}
     </div>
 </script>
 <script>
-    layui.use(['table', "ml"], function () {
+    var $;
+    layui.use(['table', "ml","jquery"], function () {
         var ml = layui.ml;
+        $ = layui.jquery;
         ml.render({
             elem: "#myTable",
             search_elem: "#mySearch",
+            page: false,
             url: 'index',
             cols: [[
+                {'field': "id", 'title': "插件标识", "search": true},
                 {'field': "title", 'title': "插件名称", "search": true},
-                {'field': "name", 'title': "插件标识"},
-                {'field': "version", 'title': "插件版本", "search": true},
+                {'field': "version", 'title': "插件版本"},
+                {'field': "path", 'title': "安装路径"},
                 {'field': "description", 'title': "插件简介"},
                 {'field': "author", 'title': "插件作者"},
-                {'field': "status", 'title': "插件状态", "search": true},
-                {'field': "tools", 'title': "操作",templet:"#toolsTpl"}
+                {'field': "show", 'title': "显示到首页", type: "switch", text: "是|否", value: "1"},
+                {'field': "tools", 'title': "操作", templet: "#toolsTpl"}
             ]],
         })
     })
+
+    function install(id) {
+        var index = layer.load()
+        $.post('{:url("install")}',{id:id},function (res) {
+
+            layer.close(index)
+        })
+    }
 </script>

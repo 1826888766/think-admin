@@ -1,41 +1,66 @@
 <?php
-
+declare(strict_types=1);
 
 namespace app\common\controller;
 
-
+/**
+ * 数据响应
+ *
+ * @package app\common\controller
+ * @author  马良 1826888766@qq.com
+ */
 class Response
 {
     /**
-     * @param $data
-     * @param int $code
+     * 正确返回
+     *
+     * @param mixed  $data
+     * @param string $msg
+     * @param int    $code
+     *
      * @return \think\response\Json
      */
-    public static function success($data,$code = 0)
+    public static function success($data, $msg = "请求成功", $code = 0): \think\response\Json
     {
-        return json(["code"=>$code,"msg"=>"请求成功","data"=>[]]);
+        return json(["code" => $code, "msg" => $msg, "data" => []]);
     }
 
     /**
      * 错误返回
-     * @param $code
+     *
+     * @param        $code
      * @param string $msg
+     *
      * @return \think\response\Json
      */
-    public static function fail($code,$msg="")
+    public static function fail($code, $msg = ""): \think\response\Json
     {
-        return  json(["code"=>$code,"msg"=>$msg,"data"=>[]]);
+        return json(["code" => $code, "msg" => $msg, "data" => []]);
     }
 
     /**
-     * layui数据
-     * @param $data
-     * @param $code
-     * @param $msg
+     * layui正确数据
+     *
+     * @param        $data
+     * @param        $count
+     * @param string $msg
+     *
      * @return \think\response\Json
      */
-    public static function layui($data,$code=0,$msg="")
+    public static function layuiSuccess($data, $count, $msg = ""): \think\response\Json
     {
-        return json(["data"=>$data,"code"=>$code,"msg"=>$msg]);
+        return json(["data" => $data, 'count' => $count, "code" => 0, "msg" => $msg]);
+    }
+
+    /**
+     * layui错误返回
+     *
+     * @param $msg
+     *
+     * @return \think\response\Json
+     */
+    public static function layuiFail($msg): \think\response\Json
+    {
+        return json(["data" => [], 'count' => 0, "code" => 1, "msg" => $msg]);
     }
 }

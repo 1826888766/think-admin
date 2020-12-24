@@ -78,7 +78,8 @@ layui.define([
         return layui.onevent.call(e, t)
     }
 
-    ml.prototype.success = function () { }
+    ml.prototype.success = function () {
+    }
 
     ml.prototype.render = function (config) {
         this.config = initConfig(config)
@@ -115,6 +116,23 @@ layui.define([
         return "<div class='layui-btn-group'>" + html.join("") + "</div>"
     }
 
+    function createSwitch(row) {
+        var value = row.default ? row.default.split("|") : [];
+        var valueDefault = 0;
+        var valueChecked = 1;
+        if (value.length === 2) {
+            valueDefault = value[0]
+            valueChecked = value[1]
+        } else if (value.length === 1) {
+            valueChecked = value[0];
+        }
+        var text = row.text||'是|否'
+        return "<div><input data-url='" + row.url + "' " +
+            "confirm='" + row.confirm + "'" +
+            "checked={{d." + row.field + "==" + row.default + "?true:false}}" +
+            " lay-filter='mlSwitch' type='checkbox' value='" + valueDefault + "|" + valueChecked + "' lay-skin='switch' lay-text='" + text + "'></div>";
+    }
+
     function initConfig(config) {
         var filed = []
         $.each(config.cols[0], function () {
@@ -123,6 +141,10 @@ layui.define([
             }
             if (this.field == "field") {
                 this['templet'] = this['templet'] || createBtns(this.btns)
+            }
+
+            if (this.type == "switch") {
+                this['templet'] = this['templet'] || createSwitch(this)
             }
         })
         var new_config = {
@@ -205,7 +227,6 @@ layui.define([
             })
             return false;
         })
-
         form.on('select(mlSearchSelect)', selectChange)
         searchDom.on("change", "input", inputChange)
 
@@ -238,9 +259,7 @@ layui.define([
         $(".date").each(function () {
             laydate.render({
                 elem: this, done: dateChange,
-                mark: {
-
-                },
+                mark: {},
                 isInitValue: false,
             })
         })
@@ -248,9 +267,7 @@ layui.define([
             laydate.render({
                 elem: this,
                 range: true,
-                mark: {
-
-                },
+                mark: {},
                 isInitValue: false,
                 done: dateChange
             })
@@ -271,8 +288,42 @@ layui.define([
         }
     }
 
+
     ml.prototype.tableListen = function () {
         // tableInstance.on("")
+        var that = this;
+        form.on("switch(mlSwitch)", function (obj) {
+            if (typeof that.switch == "function") {
+                return that.switch(obj);
+            }
+            var url = $(this).data('url')
+            if (url && url !== "undefined") {
+                var dom = $(this), status = 0, func = function () {
+                    $.get(url, {val: status}, function (res) {
+                        layui.layer.msg(res.msg);
+                        if (res.code == 0) {
+                            dom.trigger('click');
+                            form.render('checkbox');
+                        }
+                    });
+                };
+                if (this.checked) {
+                    status = 1;
+                }
+
+                if (typeof (that.attr('confirm')) == 'undefined') {
+                    func();
+                } else {
+                    layer.confirm(that.attr('confirm') || '你确定要执行操作吗？', {title: false, closeBtn: 0}, function (index) {
+                        func();
+                    }, function () {
+                        that.trigger('click');
+                        form.render('checkbox');
+                    });
+                }
+            }
+            return false;
+        })
     }
 
     ml = new ml();

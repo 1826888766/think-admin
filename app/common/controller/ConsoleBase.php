@@ -3,12 +3,13 @@
 namespace app\common\controller;
 
 use app\BaseController;
+use app\common\model\Module;
 use think\facade\View;
 
 /**
  * 控制台基础控制器
  *
- * @Author 马良 1826888766@qq.com
+ * @Author   马良 1826888766@qq.com
  * @DateTime 2020-12-23 09:57:03
  */
 class ConsoleBase extends BaseController
@@ -18,6 +19,7 @@ class ConsoleBase extends BaseController
 
     /**
      * 视图实例
+     *
      * @var \think\View
      */
     protected $view;
@@ -29,21 +31,24 @@ class ConsoleBase extends BaseController
     /**
      * 初始化操作
      *
-     * @Author 马良 1826888766@qq.com
+     * @Author   马良 1826888766@qq.com
      * @DateTime 2020-12-23 09:56:49
      */
     public function initialize()
     {
-        if (!$this->request->isAjax()){
+        if (!$this->request->isAjax()) {
             $this->initView();
+            $this->initMenu();
         }
 
     }
 
     /**
      * 初始化视图
+     *
      * @param mixed $name 配置的模板模板布局
-     * @Author 马良 1826888766@qq.com
+     *
+     * @Author   马良 1826888766@qq.com
      * @DateTime 2020-12-23 15:59:30
      * @return void
      */
@@ -65,6 +70,15 @@ class ConsoleBase extends BaseController
         $this->assign('iframe', $iframe);
     }
 
+    /**
+     * 初始化菜单
+     */
+    private function initMenu()
+    {
+        $menus = Module::allMenu();
+        $this->assign('menus',$menus);
+    }
+
     private function openIframe()
     {
         if ($this->request->controller(true) == "index" && $this->request->action(true) == "index") {
@@ -81,10 +95,12 @@ class ConsoleBase extends BaseController
     /**
      * 渲染模板
      *
-     * @Author 马良 1826888766@qq.com
+     * @Author   马良 1826888766@qq.com
      * @DateTime 2020-12-23 10:00:06
+     *
      * @param string $template
-     * @param array $vars
+     * @param array  $vars
+     *
      * @return string
      */
     public function fetch($template = "", $vars = []): string
@@ -95,10 +111,12 @@ class ConsoleBase extends BaseController
     /**
      * 渲染内容
      *
-     * @Author 马良 1826888766@qq.com
+     * @Author   马良 1826888766@qq.com
      * @DateTime 2020-12-23 13:42:32
+     *
      * @param string $content
-     * @param array $vars
+     * @param array  $vars
+     *
      * @return string
      */
     public function display($content = "", $vars = []): string
@@ -108,10 +126,13 @@ class ConsoleBase extends BaseController
 
     /**
      * 模板赋值
-     * @Author 马良 1826888766@qq.com
+     *
+     * @Author   马良 1826888766@qq.com
      * @DateTime 2020-12-23 13:42:02
+     *
      * @param string|array $name
-     * @param mixed $value
+     * @param mixed        $value
+     *
      * @return \think\View
      */
     public function assign($name, $value = null): \think\View
@@ -122,13 +143,16 @@ class ConsoleBase extends BaseController
     /**
      * 模板引擎
      *
-     * @Author 马良 1826888766@qq.com
+     * @Author   马良 1826888766@qq.com
      * @DateTime 2020-12-23 13:43:21
+     *
      * @param string $type
+     *
      * @return \think\View
      */
     public function engine($type = 'Think'): \think\View
     {
         return $this->view = View::engine($type);
     }
+
 }
