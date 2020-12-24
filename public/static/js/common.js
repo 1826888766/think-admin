@@ -2,38 +2,56 @@ var element, $;
 layui.use(['element', 'jquery'], function () {
     element = layui.element;
     $ = layui.jquery;
-    // 监听导航点击
-    element.on('nav(mySlide)', function (elem) {
-        var data = elem.data()
-        var href = data.href;
-        if (!href) {
-            return false;
-        }
-        var title = data.title || elem.text();
-        var id = hex_md5(href);
-        var dom = $(".layui-tab-title li[lay-id='" + id + "']");
-        if (dom.length) {
-            element.tabChange("myIframe", id)
-            $("#" + id)[0].contentWindow.location.reload(true);
-            return
-        }
-        element.tabAdd("myIframe", {
-            title: title,
-            content: "<iframe id='" + id + "' class=\"iframe\" src=" + href + " frameborder=\"0\"></iframe>",
-            id: id
-        });
-        element.tabChange("myIframe", id)
-    });
-    element.on('nav(myModule)', function (elem) {
-        var data = elem.data()
-        var index = data.index;
-        renderMenus(menus[index] ? menus[index].menu : [])
-    });
     // 渲染菜单
-    renderModules(menus);
-    renderMenus(menus[0] ? menus[0].menu : [])
+    if (typeof menus !== "undefined") {
+        // 监听导航点击
+        element.on('nav(mySlide)', function (elem) {
+            var data = elem.data()
+            var href = setUrlParams(data.href);
+            if (!href) {
+                return false;
+            }
+            var title = data.title || elem.text();
+            var id = hex_md5(href);
+            var dom = $(".layui-tab-title li[lay-id='" + id + "']");
+            if (dom.length) {
+                element.tabChange("myIframe", id)
+                $("#" + id)[0].contentWindow.location.reload(true);
+                return
+            }
+            element.tabAdd("myIframe", {
+                title: title,
+                content: "<iframe id='" + id + "' class=\"iframe\" src=" + href + " frameborder=\"0\"></iframe>",
+                id: id
+            });
+            element.tabChange("myIframe", id)
+        });
+        element.on('nav(myModule)', function (elem) {
+            var data = elem.data()
+            var index = data.index;
+            renderMenus(menus[index] ? menus[index].menu : [])
+        });
+        renderModules(menus);
+        renderMenus(menus[0] ? menus[0].menu : [])
+    }
 })
 
+function setUrlParams(url, param) {
+    var params = ["iframe=" + iframe];
+    for (var key in param) {
+        if (param.hasOwnProperty(key)) {
+            params.push(key + '=' + param[key])
+        }
+    }
+    params = params.join('&');
+    if (url.indexOf("?") !== -1) {
+        url += "&" + params;
+    } else {
+        url += "?" + params;
+    }
+
+    return url;
+}
 
 function renderModules(modules) {
     var html = "";

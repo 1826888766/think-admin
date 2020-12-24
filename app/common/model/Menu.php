@@ -21,7 +21,7 @@ class Menu extends Model
     public function getUrlAttr($value): ?string
     {
         if ($value) {
-            return url($value, ['iframe' => 1])->build();
+            return url($value)->build();
         }
         return null;
     }

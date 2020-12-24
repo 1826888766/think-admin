@@ -25,8 +25,8 @@ class ConsoleBase extends BaseController
     protected $view;
 
     protected $checkLogin = true;
-
     protected $checkAuth = true;
+    private $formField = [];
 
     /**
      * 初始化操作
@@ -68,6 +68,8 @@ class ConsoleBase extends BaseController
 
         $this->assign('script', "");
         $this->assign('iframe', $iframe);
+
+
     }
 
     /**
@@ -76,7 +78,29 @@ class ConsoleBase extends BaseController
     private function initMenu()
     {
         $menus = Module::allMenu();
-        $this->assign('menus',$menus);
+        $this->assign('menus', $menus);
+    }
+
+    public function add()
+    {
+        $this->assign('formConfig', [
+            'action' => $this->request->action(),
+            'field' => $this->formField,
+            'method' => 'POST',
+            'data' => []
+        ]);
+        return $this->fetch('template:form');
+    }
+
+    public function edit()
+    {
+        $this->assign('formConfig', [
+            'action' => $this->request->action(),
+            'field' => $this->formField,
+            'method' => 'POST',
+            'data' => []
+        ]);
+        return $this->fetch('template:form');
     }
 
     private function openIframe()

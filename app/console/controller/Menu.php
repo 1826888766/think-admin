@@ -23,4 +23,5 @@ class Menu extends ConsoleBase
         }
         return $this->fetch();
     }
+
 }

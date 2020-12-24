@@ -28,16 +28,23 @@
             search_elem: "#mySearch",
             cols: [[
                 {'type': "checkbox"},
-                {'field': "sort", 'title': "排序", width:60,edit: true},
+                {'field': "sort", 'title': "排序", width: 60, edit: true},
                 {'field': "name", 'title': "菜单名称", "search": true},
-                {'field': "status", 'title': "状态",type: "switch"},
-                {'field': "is_auth", 'title': "是否验权",type: "switch"},
-                {'field': "is_show", 'title': "是否显示",type: "switch"},
+                {'field': "status", 'title': "状态", type: "switch"},
+                {'field': "is_auth", 'title': "是否验权", type: "switch"},
+                {'field': "is_show", 'title': "是否显示", type: "switch"},
                 {'field': "module_name", 'title': "所属模块",},
-                {'field': "target", 'title': "跳转方式",},
+                {
+                    'field': "target", 'title': "跳转方式", templet: function (d) {
+                        return d.target === "_self" ? '新窗口' : '当前窗口';
+                    }
+                },
                 {'field': "is_plugin", 'title': "是否插件",},
-                {'field': "create_time", 'title': "创建时间",},
-                {'field': "update_time", 'title': "更新时间",},
+                {
+                    'field': "field", 'title': "操作", btns: [{
+                        title: "添加", click: "add('{:url(\"add\")}?id={{d.id}}');"
+                    }]
+                }
             ]],
             done: function (res, curr, count) {
                 console.log(res);
@@ -54,5 +61,14 @@
             }
         })
     })
+
+    function add(url, title) {
+        layer.open({
+            content: setUrlParams(url),
+            type: 2,
+            title: title,
+            area:["1200px","750px"]
+        })
+    }
 
 </script>

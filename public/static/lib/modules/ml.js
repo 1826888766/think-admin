@@ -110,7 +110,7 @@ layui.define([
     function createBtns(btns) {
         var html = [];
         $.each(btns, function () {
-            var btn = "<span onclick=add_tab('" + this.name + "','" + this.url + "') class='layui-btn " + (this.class || 'layui-btn-normal') + " '></span>"
+            var btn = "<span onclick=" + this.click + " class='layui-btn layui-btn-sm " + (this.class || 'layui-btn-normal') + " '>" + this.title + "</span>"
             html.push(btn)
         })
         return "<div class='layui-btn-group'>" + html.join("") + "</div>"
@@ -126,7 +126,7 @@ layui.define([
         } else if (value.length === 1) {
             valueChecked = value[0];
         }
-        var text = row.text||'是|否'
+        var text = row.text || '是|否'
         return "<div><input data-url='" + row.url + "' " +
             "confirm='" + row.confirm + "'" +
             "checked={{d." + row.field + "==" + row.default + "?true:false}}" +
