@@ -1,7 +1,7 @@
 <div class="layui-card">
     <div class="layui-card-body">
         <div class="layui-form layui-form-pane" id="mySearch"></div>
-        <table class="layui-table" id="myTable"></table>
+        <table class="layui-table" lay-filter="myTable" id="myTable"></table>
     </div>
 </div>
 <script type="text/html" id="toolsTpl">
@@ -21,19 +21,24 @@
     var $;
     layui.use(['table', 'form', "ml", "jquery"], function () {
         var ml = layui.ml;
+        var table = layui.table;
         $ = layui.jquery;
         ml.render({
             elem: "#myTable",
             page: false,
             search_elem: "#mySearch",
+            parseData: function (res) {
+                res.data = parseData(res.data);
+                return res
+            },
             cols: [[
                 {'type': "checkbox"},
                 {'field': "sort", 'title': "排序", width: 60, edit: true},
-                {'field': "name", 'title': "菜单名称", "search": true},
+                {'field': "name", 'title': "菜单名称", width: 300,"search": true},
                 {'field': "status", 'title': "状态", type: "switch"},
                 {'field': "is_auth", 'title': "是否验权", type: "switch"},
                 {'field': "is_show", 'title': "是否显示", type: "switch"},
-                {'field': "module_name", 'title': "所属模块",},
+                {'field': "module_name", 'title': "所属模块", update: false},
                 {
                     'field': "target", 'title': "跳转方式", templet: function (d) {
                         return d.target === "_self" ? '新窗口' : '当前窗口';
@@ -42,28 +47,28 @@
                 {'field': "is_plugin", 'title': "是否插件",},
                 {
                     'field': "field", 'title': "操作", btns: [{
-                        title: "添加", click: "add('{:url(\"add\")}?id={{d.id}}');"
+                        title: "添加", click: "layerOpen('{:url(\"add\")}',{id:'{{d.id}}'});"
                     }]
                 }
             ]],
-            done: function (res, curr, count) {
-                console.log(res);
-                console.log(curr);
-                console.log(count);
-                res.data.forEach(function (item, index) {
-                    if (item.is_wipe == 1) {
-                        var tr = $(".layui-table").find("tbody tr[data-index='" + index + "']");
-                        tr.css("background-color", "#98FB98");
-                        // 给1-0-9列添加样式
-                        tr.find(".laytable-cell-1-0-9").css("color", "red");
-                    }
-                });
-            }
         })
     })
 
-    function add(url, title) {
-        layerOpen(url, title)
-    }
 
+    function parseData(data, level) {
+        var new_data = [];
+        var level_str = "|—";
+        level = level || 0
+        for ($i = 0; $i < level; $i++) {
+            level_str += "|—";
+        }
+        layui.each(data, function (index, datum) {
+            datum.name = level_str + datum.name
+            new_data.push(datum);
+            if ($.isArray(datum['child']) && datum['child'].length > 0) {
+                new_data = new_data.concat(parseData(datum['child'], level + 1));
+            }
+        })
+        return new_data;
+    }
 </script>

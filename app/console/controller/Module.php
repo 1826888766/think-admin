@@ -5,16 +5,15 @@ namespace app\console\controller;
 
 use app\common\controller\ConsoleBase;
 use app\common\controller\Response;
-use app\common\model\Menu as MenuModel;
+use app\common\model\Module as ModuleModel;
 
-class Menu extends ConsoleBase
+class Module extends ConsoleBase
 {
 
-    protected $model = MenuModel::class;
-    protected $formData = [];
+    protected $model = ModuleModel::class;
 
     protected $formField = [
-        ['field' => 'parent_id', 'label' => '所属菜单', 'type' => 'select', "value" => []],
+        ['field' => 'parent_id', 'label' => '所属菜单'],
         ['field' => 'name', 'label' => '菜单名称'],
         ['field' => 'url', 'label' => '打开链接'],
         ['field' => 'sort', 'label' => '排序'],
@@ -31,22 +30,10 @@ class Menu extends ConsoleBase
     public function index()
     {
         if ($this->request->isAjax()) {
-            $list = MenuModel::getMenuByParentId(0, ['module']);
+            $list = ModuleModel::all();
             return Response::layuiSuccess($list, count($list));
         }
         return $this->fetch();
-    }
-
-    public function add()
-    {
-        if (!$this->request->isAjax()) {
-            $this->formField[0]['value'] = MenuModel::getMenuSelectByParentId(0);
-            $this->formData['parent_id'] = $this->param['id'];
-        } else {
-            $this->param['module_id'] = \app\common\model\Menu::where('id', $this->param['parent_id'])->value('module_id');
-        }
-
-        return parent::add();
     }
 
 }

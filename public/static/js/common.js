@@ -8,10 +8,11 @@ layui.use(['element', 'jquery', 'form'], function () {
         // 监听导航点击
         element.on('nav(mySlide)', function (elem) {
             var data = elem.data()
-            var href = setUrlParams(data.href);
-            if (!href) {
+            if (!data.href) {
                 return false;
             }
+            var href = setUrlParams(data.href||"");
+
             var title = data.title || elem.text();
             var id = hex_md5(href);
             var dom = $(".layui-tab-title li[lay-id='" + id + "']");
@@ -65,9 +66,9 @@ layui.use(['element', 'jquery', 'form'], function () {
     })
 })
 
-function layerOpen(url, title) {
+function layerOpen(url, params, title) {
     parent.layer.open({
-        content: setUrlParams(url),
+        content: setUrlParams(url, params),
         type: 2,
         title: title,
         area: ["1200px", "750px"]
@@ -75,7 +76,11 @@ function layerOpen(url, title) {
 }
 
 function back() {
-    parent.layer.closeAll()
+    if (typeof parent.layer != "undefined") {
+        parent.layer.closeAll()
+    } else {
+        window.location.back()
+    }
 }
 
 function setUrlParams(url, param) {
@@ -113,9 +118,12 @@ function renderMenus(menus, is_child) {
             if (this.target === '_blank') {
                 html += '<dd><a target="_blank" href="' + this.url + '">' + this.name + '</a></dd>'
             } else {
-                html += '<dd><a href="javascript:void(0);" data-href="' + this.url + '">' + this.name + '</a>';
-                if (layui.$.isArray(this.child)) {
+
+                if (layui.$.isArray(this.child)&&this.child.length>0) {
+                    html += '<dd><a href="javascript:void(0);" >' + this.name + '</a>';
                     html += renderMenus(this.child, true);
+                }else{
+                    html += '<dd><a href="javascript:void(0);" data-href="' + this.url + '">' + this.name + '</a>';
                 }
             }
             html += '</dd></dl>';
@@ -124,9 +132,12 @@ function renderMenus(menus, is_child) {
             if (this.target === '_blank') {
                 html += '<a target="_blank" href="' + this.url + '">' + this.name + '</a>'
             } else {
-                html += '<a data-href="' + this.url + '" href = "javascript:;" > ' + this.name + ' </a>';
-                if (layui.$.isArray(this.child)) {
+
+                if (layui.$.isArray(this.child)&&this.child.length>0) {
+                    html += '<a href = "javascript:;" > ' + this.name + ' </a>';
                     html += renderMenus(this.child, true);
+                }else{
+                    html += '<a data-href="' + this.url + '" href = "javascript:;" > ' + this.name + ' </a>';
                 }
             }
             html += '</li>';

@@ -1,7 +1,7 @@
 <div class="layui-card">
     <div class="layui-card-body ">
-        <form action="" method="POST" class="layui-form"
-              style="width: 800px;">
+        <form action="{$formConfig.action?:$action}" method="POST" class="layui-form"
+              style="width: 800px;" lay-filter="myForm">
             <h1>{$formConfig.title|default=''}</h1>
             {:createFormHtml($formConfig.field)}
             <div class="layui-form-item">
@@ -21,9 +21,7 @@
     var action = '{$formConfig.action}';
     layui.use(['form'],function () {
         var form = layui.form;
-        if (action === 'edit'){
-            form.val(data)
-        }
+        form.val("myForm",data||{});
     })
 
 

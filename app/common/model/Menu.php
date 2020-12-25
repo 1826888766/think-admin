@@ -10,6 +10,41 @@ use think\Model;
  */
 class Menu extends Model
 {
+    public static function getMenuSelectByParentId($id, $theme = 0)
+    {
+        $data = self::getMenuByParentId($id,['module']);
+        return self::parseSelect($data->toArray(), $theme);
+    }
+
+    /**
+     * 输出select数据
+     *
+     * @param     $data
+     * @param int $theme
+     * @param int $level
+     *
+     * @return array
+     */
+    public static function parseSelect($data, $theme = 0, $level = 0)
+    {
+        $new_data = [];
+        $level_str = "";
+        for ($i = 0; $i < $level; $i++) {
+            $level_str .= "┊┈┈";
+        }
+        foreach ($data as $datum) {
+            $module_name = isset($datum['module_name'])&&$datum['module_name'] ? "【{$datum['module_name']}】" : "";
+            if ($theme == 0) {
+                $new_data[] = [$datum['id'], $level_str . $module_name . $datum['name']];
+            } else {
+                $new_data[] = ['value' => $datum['id'], 'name' => $level_str . $module_name . $datum['name']];
+            }
+            if (is_array($datum['child']) && count($datum['child']) > 0) {
+                $new_data = array_merge_recursive($new_data, self::parseSelect($datum['child'], $theme, $level + 1));
+            }
+        }
+        return $new_data;
+    }
 
     /**
      * url获取器
@@ -51,8 +86,8 @@ class Menu extends Model
             'parent_id' => 0,
             'module_id' => $id
         ];
-        $field = ['id', 'name', 'url', 'is_auth', 'sort', 'module_id', 'parent_id', 'target', 'is_plugin'];
-        $first = self::where($where)->field($field)->order('sort', 'asc')->select();
+        $field = ['id', 'name', 'url', 'is_auth', 'is_show', 'status', 'sort', 'module_id', 'parent_id', 'target', 'is_plugin'];
+        $first = self::where($where)->field($field)->order('sort', 'asc')->order('id', 'asc')->select();
         $first->each(function ($item) {
             $menu = self::getMenuByParentId($item->id);
             $item->setAttr('child', $menu);
@@ -75,8 +110,8 @@ class Menu extends Model
             'status' => 1,
             'parent_id' => $id
         ];
-        $field = ['id', 'name', 'url', 'is_auth', 'sort', 'module_id', 'parent_id', 'target', 'is_plugin'];
-        $first = self::where($where)->field($field)->order('sort', 'asc')->with($with)->select();
+        $field = ['id', 'name', 'url', 'is_auth', 'is_show', 'status', 'sort', 'module_id', 'parent_id', 'target', 'is_plugin'];
+        $first = self::where($where)->field($field)->order('sort', 'asc')->order('id', 'asc')->with($with)->select();
         $first->each(function ($item) {
             $menu = self::getMenuByParentId($item->id);
             $item->setAttr('child', $menu);

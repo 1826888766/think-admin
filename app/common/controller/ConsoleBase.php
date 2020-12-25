@@ -40,6 +40,7 @@ class ConsoleBase extends BaseController
     protected $validateAddScene = "";
     // 编辑验证场景
     protected $validateEditScene = "";
+    protected $formData = [];
 
     /**
      * 初始化操作
@@ -100,20 +101,25 @@ class ConsoleBase extends BaseController
     public function add()
     {
         if ($this->request->isAjax()) {
-
-            $scene = $this->validateAddScene ? ":" . $this->validateAddScene : "";
-            $error = $this->validate($this->param, $this->validate . $scene);
-            if (true !== $error) {
-                return Response::fail(1, $error);
+            if ($this->validate){
+                $scene = $this->validateAddScene ? ":" . $this->validateAddScene : "";
+                $error = $this->validate($this->param, $this->validate . $scene);
+                if (true !== $error) {
+                    return Response::fail(1, $error);
+                }
             }
-            $data = $this->model->create($this->param);
-            return Response::success($data);
+            if ($this->model){
+                $data = $this->model->create($this->param);
+                return Response::success($data);
+            }
+           return Response::fail(1,'请完善');
+
         }
         $this->assign('formConfig', [
             'action' => $this->request->action(),
             'field' => $this->formField,
             'method' => 'POST',
-            'data' => []
+            'data' => $this->formData
         ]);
         return $this->fetch('template:form');
     }
@@ -128,8 +134,14 @@ class ConsoleBase extends BaseController
                     return Response::fail(1, $error);
                 }
             }
-            $data = $this->model->where('id', $this->param['id'])->update($this->param);
-            return Response::success($data);
+            if ($this->model) {
+                $data = $this->model->where('id', $this->param['id'])->update($this->param);
+                if ($data) {
+                    return Response::success($data, '编辑成功');
+                }
+                return Response::fail(1, '编辑失败');
+            }
+            return Response::success([]);
         }
         $data = $this->model->where(['id' => $id])->find();
         $this->assign('formConfig', [
@@ -161,7 +173,7 @@ class ConsoleBase extends BaseController
      * @DateTime 2020-12-23 10:00:06
      *
      * @param string $template
-     * @param array $vars
+     * @param array  $vars
      *
      * @return string
      */
@@ -177,7 +189,7 @@ class ConsoleBase extends BaseController
      * @DateTime 2020-12-23 13:42:32
      *
      * @param string $content
-     * @param array $vars
+     * @param array  $vars
      *
      * @return string
      */
@@ -193,7 +205,7 @@ class ConsoleBase extends BaseController
      * @DateTime 2020-12-23 13:42:02
      *
      * @param string|array $name
-     * @param mixed $value
+     * @param mixed        $value
      *
      * @return \think\View
      */

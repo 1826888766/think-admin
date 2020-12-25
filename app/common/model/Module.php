@@ -22,7 +22,7 @@ class Module extends Model
             'is_show' => 1,
             'status' => 1,
         ];
-        return self::where($where)->select();
+        return self::where($where)->order('id', 'asc')->select();
     }
 
     /**
@@ -32,7 +32,7 @@ class Module extends Model
      */
     public static function allMenu(): \think\Collection
     {
-        if (!Cache::has('all_menu')||env('APP_DEBUG')) {
+        if (!Cache::has('all_menu') || env('APP_DEBUG')) {
             $all = self::all();
             $all->each(function ($item) {
                 $menu = Menu::getMenuByModuleId($item->id);

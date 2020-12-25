@@ -6,7 +6,6 @@ layui.define([
     'laytpl'
 ], function (exports) {
     'use strict';
-    var tableInstance;
     const $ = layui.$;
     const table = layui.table;
     const laydate = layui.laydate;
@@ -105,8 +104,6 @@ layui.define([
         reloadSearchForm(this.config.search)
     }
 
-    ml.prototype.tableInstance = tableInstance;
-
     function createBtns(btns) {
         var html = [];
         $.each(btns, function () {
@@ -133,6 +130,16 @@ layui.define([
             " lay-filter='mlSwitch' type='checkbox' value='" + valueDefault + "|" + valueChecked + "' lay-skin='switch' lay-text='" + text + "'></div>";
     }
 
+    function getUpdateField(config) {
+        var update = [];
+        $.each(config, function () {
+            if (this.update !== false && this.field && this.field !== 'field') {
+                update.push(this.field)
+            }
+        })
+        return update;
+    }
+
     function initConfig(config) {
         var filed = []
         $.each(config.cols[0], function () {
@@ -152,9 +159,15 @@ layui.define([
                 elem: "#mlTableData",
                 page: true,
                 url: GetUrlRelativePath()
-            }, config), search: {
+            }, config),
+            search: {
                 elem: config.search_elem || "#mlTableDataSearch",
                 field: filed
+            },
+            update: {
+                field: config.update_field || getUpdateField(config.cols[0]),
+                url: config.update_url || "edit",
+                primary: config.update_primary || "id"
             }
         };
 
@@ -209,12 +222,12 @@ layui.define([
 
 
     function renderTable(config) {
-        tableInstance = table.render(config)
+        ml.tableInstance = table.render(config)
     }
 
 
     function reloadTable(config) {
-        tableInstance.reload(config)
+        ml.tableInstance.reload(config)
     }
 
     ml.prototype.searchListen = function () {
@@ -288,9 +301,14 @@ layui.define([
         }
     }
 
-
+    ml.prototype.setUpdateParam = function (update) {
+        var data = {};
+        $.each(this.config.update.field, function () {
+            data[this] = update[this]
+        })
+        return data;
+    }
     ml.prototype.tableListen = function () {
-        // tableInstance.on("")
         var that = this;
         form.on("switch(mlSwitch)", function (obj) {
             if (typeof that.switch == "function") {
@@ -323,6 +341,21 @@ layui.define([
                 }
             }
             return false;
+        })
+        table.on("edit(myTable)", function (obj) {
+            var data = obj.data;
+            data[obj.field] = obj.value;
+            var params = that.setUpdateParam(data)
+            params[that.config.update.primary] = data[that.config.update.primary];
+            if (!params[that.config.update.primary]) {
+                return layer.msg('主键不存在');
+            }
+            $.post(that.config.update.url, params, function (res) {
+                layer.msg(res.msg);
+                if (res.code == 0) {
+                    ml.tableInstance.reload()
+                }
+            })
         })
     }
 
