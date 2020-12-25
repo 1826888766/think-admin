@@ -12,7 +12,7 @@ class Menu extends Model
 {
     public static function getMenuSelectByParentId($id, $theme = 0)
     {
-        $data = self::getMenuByParentId($id,['module']);
+        $data = self::getMenuByParentId($id, ['module']);
         return self::parseSelect($data->toArray(), $theme);
     }
 
@@ -33,7 +33,7 @@ class Menu extends Model
             $level_str .= "┊┈┈";
         }
         foreach ($data as $datum) {
-            $module_name = isset($datum['module_name'])&&$datum['module_name'] ? "【{$datum['module_name']}】" : "";
+            $module_name = isset($datum['module_name']) && $datum['module_name'] ? "【{$datum['module_name']}】" : "";
             if ($theme == 0) {
                 $new_data[] = [$datum['id'], $level_str . $module_name . $datum['name']];
             } else {
@@ -116,6 +116,25 @@ class Menu extends Model
             $menu = self::getMenuByParentId($item->id);
             $item->setAttr('child', $menu);
         });
+        return $first;
+    }
+
+    /**
+     * 根据查询条件
+     *
+     * @param array $where
+     * @param array $with
+     *
+     * @return \think\Collection
+     */
+    public static function getMenuByWhere($where = [], $with = []): \think\Collection
+    {
+        $field = ['id', 'name', 'url', 'is_auth', 'is_show', 'status', 'sort', 'module_id', 'parent_id', 'target', 'is_plugin'];
+        $first = self::where($where)
+            ->where([
+                'is_show' => 1,
+                'status' => 1,
+            ])->field($field)->order('sort', 'asc')->order('id', 'asc')->with($with)->select();
         return $first;
     }
 

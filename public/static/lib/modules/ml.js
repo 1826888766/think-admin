@@ -110,7 +110,7 @@ layui.define([
             var btn = "<span onclick=" + this.click + " class='layui-btn layui-btn-sm " + (this.class || 'layui-btn-normal') + " '>" + this.title + "</span>"
             html.push(btn)
         })
-        return "<div class='layui-btn-group'>" + html.join("") + "</div>"
+        return "<div><div class='layui-btn-group'>" + html.join("") + "</div></div>"
     }
 
     function createSwitch(row) {

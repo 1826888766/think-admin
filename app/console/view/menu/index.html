@@ -1,6 +1,6 @@
 <div class="layui-card">
     <div class="layui-card-body">
-        <div class="layui-form layui-form-pane" id="mySearch"></div>
+        <form class="layui-form layui-form-pane" id="mySearch"></form>
         <table class="layui-table" lay-filter="myTable" id="myTable"></table>
     </div>
 </div>
@@ -34,7 +34,7 @@
             cols: [[
                 {'type': "checkbox"},
                 {'field': "sort", 'title': "排序", width: 60, edit: true},
-                {'field': "name", 'title': "菜单名称", width: 300,"search": true},
+                {'field': "name", 'title': "菜单名称", width: 300, "search": true},
                 {'field': "status", 'title': "状态", type: "switch"},
                 {'field': "is_auth", 'title': "是否验权", type: "switch"},
                 {'field': "is_show", 'title': "是否显示", type: "switch"},
@@ -44,11 +44,20 @@
                         return d.target === "_self" ? '新窗口' : '当前窗口';
                     }
                 },
-                {'field': "is_plugin", 'title': "是否插件",},
+                {
+                    'field': "is_plugin", 'title': "是否插件", templet: function (d) {
+                        return d.is_plugin == 1 ? '是' : '否';
+                    }
+                },
                 {
                     'field': "field", 'title': "操作", btns: [{
-                        title: "添加", click: "layerOpen('{:url(\"add\")}',{id:'{{d.id}}'});"
-                    }]
+                        title: "添加", class: "layui-btn-default", click: "layerOpen('{:url(\"add\")}',{id:'{{d.id}}'});",
+                    }, {
+                        title: "编辑", click: "layerOpen('{:url(\"edit\")}',{id:'{{d.id}}'});",
+                    }, {
+                        title: "删除", class: "layui-btn-danger", click: "del('{:url(\"del\")}',{id:'{{d.id}}'});",
+                    }
+                    ]
                 }
             ]],
         })

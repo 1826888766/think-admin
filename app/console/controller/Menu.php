@@ -31,7 +31,12 @@ class Menu extends ConsoleBase
     public function index()
     {
         if ($this->request->isAjax()) {
-            $list = MenuModel::getMenuByParentId(0, ['module']);
+            $where = getSearchWhere($this->param);
+            if($where){
+                $list = MenuModel::getMenuByWhere($where, ['module']);
+            }else{
+                $list = MenuModel::getMenuByParentId(0, ['module']);
+            }
             return Response::layuiSuccess($list, count($list));
         }
         return $this->fetch();
