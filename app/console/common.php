@@ -42,7 +42,7 @@ function getSearchWhere($params, $create = "create_time", $haystack = ['limit', 
         }
         if (startsWith($key, 'id') || endsWith($key, '_id') || startsWith($key, 'is_') || $key == 'province' || $key == 'city') {
             // 判断开头或结尾为id 或是状态类的字段
-            $where[] = [$key, 'eq', $value];
+            $where[] = [$key, '=', $value];
         } elseif ($key == 'start_time' || $key == 'end_time') {
             // 判断时间
             if ($key == 'start_time') {
@@ -114,7 +114,7 @@ function createFormItemHtml($item, $is_child = false)
         return "";
     }
     $html  = "";
-    if (!$is_child) {
+    if (!$is_child&&$item['type']!='hidden') {
         $html = "<div class='layui-form-item'><label  class='layui-form-label'>{$item['label']}</label>";
     }
     switch ($item['type']) {
@@ -183,6 +183,9 @@ function createFormItemHtml($item, $is_child = false)
             }
             $html .= '</div>';
             break;
+        case 'hidden':
+            $html .= " <input type={$item['type']} name={$item['field']} >";
+            break;
         default:
             $html .= '<div class="layui-input-inline">';
             $html .= " <input  autocomplete=off type={$item['type']} name={$item['field']} placeholder=" . getField($item, 'placeholder', "请输入{$item['label']}") . "
@@ -190,7 +193,7 @@ function createFormItemHtml($item, $is_child = false)
             $html .= '</div>';
             break;
     }
-    if (!$is_child) {
+    if (!$is_child&&$item['type']!='hidden') {
         $html .= "</div>";
     }
 

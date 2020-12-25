@@ -52,6 +52,7 @@ layui.use(['element', 'jquery', 'form'], function () {
                 $(obj.elem).text(res.msg).removeClass('layui-btn-disabled')
                 if (res.code == 0) {
                     parent.window.layer.closeAll()
+                    parent.window.layui.ml.tableInstance.reload()
                 }
                 timeout()
             },

@@ -46,6 +46,12 @@ class Menu extends Model
         return $new_data;
     }
 
+    public static function getMenuSelectByModuleId($id, $theme = 0): array
+    {
+        $data = self::getMenuByModuleId($id, ['module']);
+        return self::parseSelect($data->toArray(), $theme);
+    }
+
     /**
      * url获取器
      *
@@ -78,14 +84,20 @@ class Menu extends Model
      *
      * @return \think\Collection
      */
-    public static function getMenuByModuleId($id): \think\Collection
+    public static function getMenuByModuleId($id, $with = []): \think\Collection
     {
         $where = [
             'is_show' => 1,
             'status' => 1,
+            'module_id' => $id,
             'parent_id' => 0,
-            'module_id' => $id
         ];
+        return self::list($where, $with);
+    }
+
+    public static function list($where = [], $with = [])
+    {
+
         $field = ['id', 'name', 'url', 'is_auth', 'is_show', 'status', 'sort', 'module_id', 'parent_id', 'target', 'is_plugin'];
         $first = self::where($where)->field($field)->order('sort', 'asc')->order('id', 'asc')->select();
         $first->each(function ($item) {
@@ -110,32 +122,7 @@ class Menu extends Model
             'status' => 1,
             'parent_id' => $id
         ];
-        $field = ['id', 'name', 'url', 'is_auth', 'is_show', 'status', 'sort', 'module_id', 'parent_id', 'target', 'is_plugin'];
-        $first = self::where($where)->field($field)->order('sort', 'asc')->order('id', 'asc')->with($with)->select();
-        $first->each(function ($item) {
-            $menu = self::getMenuByParentId($item->id);
-            $item->setAttr('child', $menu);
-        });
-        return $first;
-    }
-
-    /**
-     * 根据查询条件
-     *
-     * @param array $where
-     * @param array $with
-     *
-     * @return \think\Collection
-     */
-    public static function getMenuByWhere($where = [], $with = []): \think\Collection
-    {
-        $field = ['id', 'name', 'url', 'is_auth', 'is_show', 'status', 'sort', 'module_id', 'parent_id', 'target', 'is_plugin'];
-        $first = self::where($where)
-            ->where([
-                'is_show' => 1,
-                'status' => 1,
-            ])->field($field)->order('sort', 'asc')->order('id', 'asc')->with($with)->select();
-        return $first;
+        return self::list($where, $with);
     }
 
     /**

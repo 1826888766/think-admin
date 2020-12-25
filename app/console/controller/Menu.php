@@ -18,6 +18,7 @@ class Menu extends ConsoleBase
         ['field' => 'name', 'label' => '菜单名称'],
         ['field' => 'url', 'label' => '打开链接'],
         ['field' => 'sort', 'label' => '排序'],
+        ['field' => 'module_id', 'type' => 'hidden'],
         ['field' => 'is_show', "type" => 'radio', "default" => 1, "value" => "0|否,1|是", 'label' => '是否显示'],
         ['field' => 'is_auth', "type" => 'radio', "default" => 1, "value" => "0|否,1|是", 'label' => '是否验权'],
         ['field' => 'status', "type" => 'radio', "default" => 1, "value" => "0|禁用,1|启用", 'label' => '是否禁用'],
@@ -32,26 +33,32 @@ class Menu extends ConsoleBase
     {
         if ($this->request->isAjax()) {
             $where = getSearchWhere($this->param);
-            if($where){
-                $list = MenuModel::getMenuByWhere($where, ['module']);
-            }else{
-                $list = MenuModel::getMenuByParentId(0, ['module']);
-            }
+            $list = MenuModel::list($where, ['module']);
             return Response::layuiSuccess($list, count($list));
         }
+        $module = \app\common\model\Module::order('id', 'asc')->select();
+        $this->assign('module', $module);
         return $this->fetch();
     }
 
     public function add()
     {
         if (!$this->request->isAjax()) {
-            $this->formField[0]['value'] = MenuModel::getMenuSelectByParentId(0);
-            $this->formData['parent_id'] = $this->param['id'];
-        } else {
-            $this->param['module_id'] = \app\common\model\Menu::where('id', $this->param['parent_id'])->value('module_id');
+            $this->formField[0]['value'] = MenuModel::getMenuSelectByModuleId($this->param['module_id']);
+            if (isset($this->param['id'])){
+                $this->formData['parent_id'] = $this->param['id'];
+            }
+            $this->formData['module_id'] = $this->param['module_id'];
         }
-
         return parent::add();
+    }
+
+    public function edit($id)
+    {
+        if (!$this->request->isAjax()) {
+            $this->formField[0]['value'] =MenuModel::getMenuSelectByModuleId($this->param['module_id']);
+        }
+        return parent::edit($id);
     }
 
 }
