@@ -1,0 +1,42 @@
+<div class="layui-card">
+    <div class="layui-card-body">
+        <div class="layui-form layui-form-pane" id="mySearch"></div>
+        <div class="layui-btn-group">
+            <span class="layui-btn layui-btn-sm" onclick=layerOpen('{:url("add")}')>添加</span>
+        </div>
+        <table class="layui-table" lay-filter="myTable" id="myTable"></table>
+    </div>
+</div>
+<script>
+    var $;
+    layui.use(['table', 'form', "ml", "jquery"], function () {
+        var ml = layui.ml;
+        var table = layui.table;
+        $ = layui.jquery;
+        ml.render({
+            elem: "#myTable",
+            page: false,
+            search_elem: "#mySearch",
+            cols: [[
+                {'type': "checkbox"},
+                {'field': "id", 'title': "编号", width: 60, edit: true},
+                {'field': "name", 'title': "菜单名称", "search": true},
+                {'field': "auth", 'title': "权限", templet:"<div><span style='cursor: pointer;color: #1E9FFF' onclick=layerOpen('{:url("permission")}',{id:'{{d.id}}'},'权限设置')>设置</span></div>"},
+                {
+                    'field': "status",
+                    'title': "状态",
+                    confirm: '确认修改状态吗?',
+                    url: "{:url('edit')}",
+                    type: "switch",
+                    text: "启用|禁用"
+                },
+                {
+                    'field': "field", 'title': "操作", btns: [
+                        {title: "编辑", click: "layerOpen('{:url(\"edit\")}',{id:'{{d.id}}'},'编辑');",},
+                        {title: "删除", class: "layui-btn-warm", click: "del('{{d.id}}');"}]
+                }
+            ]]
+        })
+    })
+
+</script>

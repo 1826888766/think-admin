@@ -1,3 +1,7 @@
+function eq(a, b) {
+    return a == b;
+}
+
 layui.define([
     'jquery',
     'form',
@@ -124,10 +128,10 @@ layui.define([
             valueChecked = value[0];
         }
         var text = row.text || '是|否'
-        return "<div><input data-url='" + row.url + "' " +
-            "confirm='" + row.confirm + "'" +
-            "checked={{d." + row.field + "==" + row.default + "?true:false}}" +
-            " lay-filter='mlSwitch' type='checkbox' value='" + valueDefault + "|" + valueChecked + "' lay-skin='switch' lay-text='" + text + "'></div>";
+        return "<div><input data-id='{{d.id}}' data-url='" + row.url + "' " +
+        'confirm="'+row.confirm + '"'  + "name='"+row.field+"'" +
+            "{{eq(d." + row.field + "," + valueChecked + ")?'checked':' '}}" +
+            " lay-filter='mlSwitch' type='checkbox' value='" + valueDefault + "|" + valueChecked + "' lay-skin='switch'  lay-text='" + text + "'></div>";
     }
 
     function getUpdateField(config) {
@@ -316,10 +320,14 @@ layui.define([
             }
             var url = $(this).data('url')
             if (url && url !== "undefined") {
-                var dom = $(this), status = 0, func = function () {
-                    $.get(url, {val: status}, function (res) {
+
+                var dom = $(this),field=dom.attr('name'), status = 0, func = function () {
+                    var data = {};
+                    data[field] = status;
+                    url = setUrlParams(url,{id:dom.data('id')})
+                    $.get(url, data, function (res) {
                         layui.layer.msg(res.msg);
-                        if (res.code == 0) {
+                        if (res.code != 0) {
                             dom.trigger('click');
                             form.render('checkbox');
                         }
@@ -328,14 +336,17 @@ layui.define([
                 if (this.checked) {
                     status = 1;
                 }
-
-                if (typeof (that.attr('confirm')) == 'undefined') {
+                var confirm = $(this).attr('confirm');
+                if (confirm === undefined) {
                     func();
                 } else {
-                    layer.confirm(that.attr('confirm') || '你确定要执行操作吗？', {title: false, closeBtn: 0}, function (index) {
+                    layer.confirm(confirm === 'undefined' ? '你确定要执行操作吗？' : confirm, {
+                        title: false,
+                        closeBtn: 0
+                    }, function (index) {
                         func();
                     }, function () {
-                        that.trigger('click');
+                        dom.trigger('click');
                         form.render('checkbox');
                     });
                 }

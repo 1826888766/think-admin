@@ -55,6 +55,7 @@ class ConsoleBase extends BaseController
             $this->initMenu();
         }
         $this->param = request()->param();
+        unset($this->param['iframe']);
         if ($this->model) {
             $this->model = model($this->model);
         }
@@ -101,18 +102,18 @@ class ConsoleBase extends BaseController
     public function add()
     {
         if ($this->request->isAjax()) {
-            if ($this->validate){
-                $scene = $this->validateAddScene ? ":" . $this->validateAddScene : "";
+            if ($this->validate) {
+                $scene = $this->validateAddScene ? "." . $this->validateAddScene : "";
                 $error = $this->validate($this->param, $this->validate . $scene);
                 if (true !== $error) {
                     return Response::fail(1, $error);
                 }
             }
-            if ($this->model){
+            if ($this->model) {
                 $data = $this->model->create($this->param);
                 return Response::success($data);
             }
-           return Response::fail(1,'请完善');
+            return Response::fail(1, '请完善');
 
         }
         $this->assign('formConfig', [
@@ -128,18 +129,18 @@ class ConsoleBase extends BaseController
     {
         if ($this->request->isAjax()) {
             if ($this->validate) {
-                $scene = $this->validateAddScene ? ":" . $this->validateAddScene : "";
+                $scene = $this->validateAddScene ? "." . $this->validateAddScene : "";
                 $error = $this->validate($this->param, $this->validate . $scene);
                 if (true !== $error) {
                     return Response::fail(1, $error);
                 }
             }
             if ($this->model) {
-                $data = $this->model->where('id', $this->param['id'])->update($this->param);
+                $data = $this->model->update($this->param);
                 if ($data) {
                     return Response::success($data, '编辑成功');
                 }
-                return Response::fail(1, '编辑失败');
+                return Response::fail(1, '编辑失败'.$this->model->getLastSql());
             }
             return Response::success([]);
         }
@@ -151,6 +152,21 @@ class ConsoleBase extends BaseController
             'data' => $data
         ]);
         return $this->fetch('template:form');
+    }
+
+    public function del($id)
+    {
+        if ($this->request->isAjax()) {
+            if ($this->model) {
+                $data = $this->model->where('id', $id)->delete();
+                if ($data) {
+                    return Response::success(true, '删除成功');
+                }
+                return Response::fail(1, '删除失败');
+            }
+            return Response::fail(0, '未定义模型');
+        }
+        return Response::fail(0, '不支持当前访问');
     }
 
     private function openIframe()

@@ -10,7 +10,7 @@
                 {volist name="$module" id="vo"}
                 <li lay-id="{$key}" class="{$key==0?'layui-this':''}">
                     {$vo.name}
-                    <span style="margin: 0 5px"><i onclick=add('{:url("add")}',{module_id:'{$vo.id}'}) class="layui-icon layui-icon-add-circle"></i></span>
+                    <span style="margin-left: 10px"><i onclick=add('{:url("add")}',{module_id:'{$vo.id}'}) class="layui-icon layui-icon-add-circle"></i></span>
 
                 </li>
                 {/volist}
@@ -79,7 +79,7 @@
                     'field': "field", 'title': "操作", btns: [{
                         title: "添加", class: "layui-btn-default", click: "add('{:url(\"add\")}',{id:'{{d.id}}'});",
                     }, {
-                        title: "编辑", click: "layerOpen('{:url(\"edit\")}',{id:'{{d.id}}'});",
+                        title: "编辑", click: "layerOpen('{:url(\"edit\")}',{id:'{{d.id}}',module_id:'{{d.module_id}}'});",
                     }, {
                         title: "删除", class: "layui-btn-danger", click: "del('{:url(\"del\")}',{id:'{{d.id}}'});",
                     }
@@ -95,6 +95,14 @@
             params['module_id'] = $('.layui-tab-title .layui-this').attr('lay-id')
         }
         layerOpen(url, params)
+    }
+    function del(url, params) {
+        layui.$.post(url,params,function (res) {
+            layer.msg(res.msg)
+            if(res.code == 0){
+                layui.ml.tableInstance.reload()
+            }
+        })
     }
 
     function parseData(data, level) {

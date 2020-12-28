@@ -14,3 +14,13 @@ if (!function_exists('model')) {
         return new $name();
     }
 }
+
+function create_password($password)
+{
+    return password_hash($password, PASSWORD_DEFAULT);
+}
+
+function verity_password($password, $hash): bool
+{
+    return password_verify($password, $hash);
+}

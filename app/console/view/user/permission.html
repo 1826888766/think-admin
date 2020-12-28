@@ -1,0 +1,35 @@
+<form class="layui-form">
+    {volist name="$auth" id="vo"}
+    <fieldset class="layui-elem-field layui-field-title">
+        <legend>{$vo.title}</legend>
+        <div class="layui-field-box">
+            <div id="tree-{$vo.id}">{$vo.title}</div>
+        </div>
+    </fieldset>
+    {/volist}
+    <div class="layui-form-item">
+        <label class="layui-form-label"></label>
+        <div style="height: 50px">
+            <div class="layui-input-block" style="position: fixed;bottom: 5px;width: 100%;background: #f2f2f2">
+                <button class="layui-btn layui-btn-nomarl" type="submit" lay-submit
+                        lay-filter="mlFormSubmit">保存
+                </button>
+                <button class="layui-btn layui-btn-warm" type="button" onclick="back()">返回</button>
+            </div>
+        </div>
+    </div>
+</form>
+<script>
+    layui.use(['tree'], function () {
+        var tree = layui.tree;
+        {volist name="$auth" id="vo"}
+        tree.render({
+            elem: '#tree-{$vo.id}'  //绑定元素
+            , data: {:json_encode($vo.children,256)},
+            showCheckbox:true,
+            onlyIconControl:true,
+            showLine:true
+        });
+        {/volist}
+    })
+</script>

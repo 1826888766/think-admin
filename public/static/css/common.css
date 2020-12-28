@@ -2,7 +2,9 @@ body{
     background-color: #f2f2f2;
 }
 
-
+.text-red{
+    color: #b30101;
+}
 
 .padding{
     padding: 10px;

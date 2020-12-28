@@ -4,12 +4,6 @@
         <table class="layui-table" lay-filter="myTable" id="myTable"></table>
     </div>
 </div>
-<script type="text/html" id="toolsTpl">
-    <div class="layui-btn-group">
-        <span class="layui-btn layui-btn-sm" onclick="edit('{{d.id}}');">编辑</span>
-        <span class="layui-btn layui-btn-sm layui-btn-danger" onclick="del('{{d.id}}');">删除</span>
-    </div>
-</script>
 <script>
     var $;
     layui.use(['table', 'form', "ml", "jquery"], function () {

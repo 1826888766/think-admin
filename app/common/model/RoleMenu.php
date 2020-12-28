@@ -3,12 +3,12 @@ declare (strict_types = 1);
 
 namespace app\common\model;
 
-use think\Model;
+use think\model\Pivot;
 
 /**
  * @mixin \think\Model
  */
-class RoleAuth extends Model
+class RoleMenu extends Pivot
 {
-    //
+
 }

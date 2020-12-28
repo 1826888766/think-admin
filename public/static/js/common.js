@@ -11,7 +11,7 @@ layui.use(['element', 'jquery', 'form'], function () {
             if (!data.href) {
                 return false;
             }
-            var href = setUrlParams(data.href||"");
+            var href = setUrlParams(data.href || "");
 
             var title = data.title || elem.text();
             var id = hex_md5(href);
@@ -51,8 +51,8 @@ layui.use(['element', 'jquery', 'form'], function () {
             success: function (res) {
                 $(obj.elem).text(res.msg).removeClass('layui-btn-disabled')
                 if (res.code == 0) {
-                    parent.window.layer.closeAll()
-                    parent.window.layui.ml.tableInstance.reload()
+                    parent.layer.closeAll()
+                    parent.layui.ml.tableInstance.reload()
                 }
                 timeout()
             },
@@ -68,12 +68,17 @@ layui.use(['element', 'jquery', 'form'], function () {
 })
 
 function layerOpen(url, params, title) {
-    parent.layer.open({
-        content: setUrlParams(url, params),
-        type: 2,
-        title: title,
-        area: ["1200px", "750px"]
-    })
+    if (typeof url == "object") {
+        layer.open(url)
+    } else {
+        layer.open({
+            content: setUrlParams(url, params),
+            type: 2,
+            title: title,
+            area: ["850px", "650px"]
+        })
+    }
+
 }
 
 function back() {
@@ -120,10 +125,10 @@ function renderMenus(menus, is_child) {
                 html += '<dd><a target="_blank" href="' + this.url + '">' + this.name + '</a></dd>'
             } else {
 
-                if (layui.$.isArray(this.child)&&this.child.length>0) {
+                if (layui.$.isArray(this.child) && this.child.length > 0) {
                     html += '<dd><a href="javascript:void(0);" >' + this.name + '</a>';
                     html += renderMenus(this.child, true);
-                }else{
+                } else {
                     html += '<dd><a href="javascript:void(0);" data-href="' + this.url + '">' + this.name + '</a>';
                 }
             }
@@ -134,10 +139,10 @@ function renderMenus(menus, is_child) {
                 html += '<a target="_blank" href="' + this.url + '">' + this.name + '</a>'
             } else {
 
-                if (layui.$.isArray(this.child)&&this.child.length>0) {
+                if (layui.$.isArray(this.child) && this.child.length > 0) {
                     html += '<a href = "javascript:;" > ' + this.name + ' </a>';
                     html += renderMenus(this.child, true);
-                }else{
+                } else {
                     html += '<a data-href="' + this.url + '" href = "javascript:;" > ' + this.name + ' </a>';
                 }
             }
