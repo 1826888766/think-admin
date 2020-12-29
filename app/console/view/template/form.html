@@ -24,11 +24,10 @@
 <script>
     var data = {:json_encode($formConfig.data?:[])};
     var action = '{$formConfig.action}';
-    layui.use(['form'],function () {
+    layui.use(['form','jquery'],function () {
         var form = layui.form;
-        form.val("myForm",data||{});
+        var $ = layui.jquery;
+        formVal("myForm",data||{})
     })
-
-
 
 </script>

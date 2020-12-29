@@ -98,7 +98,13 @@ class ConsoleBase extends BaseController
         $menus = Module::allMenu();
         $this->assign('menus', $menus);
     }
-
+    /**
+     * 添加基础操作
+     *
+     * @Author 马良 1826888766@qq.com
+     * @DateTime 2020-12-29 15:44:35
+     * @return string||json
+     */
     public function add()
     {
         if ($this->request->isAjax()) {
@@ -113,7 +119,7 @@ class ConsoleBase extends BaseController
                 $data = $this->model->create($this->param);
                 return Response::success($data);
             }
-            return Response::fail(1, '请完善');
+            return Response::fail(1, '模型不存在');
 
         }
         $this->assign('formConfig', [
@@ -125,9 +131,20 @@ class ConsoleBase extends BaseController
         return $this->fetch('template:form');
     }
 
+    /**
+     * 编辑基础
+     *
+     * @Author 马良 1826888766@qq.com
+     * @DateTime 2020-12-29 15:45:42
+     * @param [int] $id
+     * @return string||json
+     */
     public function edit($id)
     {
         if ($this->request->isAjax()) {
+            if(isset($this->param['edit_status'])){
+                return $this->status($id);
+            }
             if ($this->validate) {
                 $scene = $this->validateAddScene ? "." . $this->validateAddScene : "";
                 $error = $this->validate($this->param, $this->validate . $scene);
@@ -140,11 +157,11 @@ class ConsoleBase extends BaseController
                 if ($data) {
                     return Response::success($data, '编辑成功');
                 }
-                return Response::fail(1, '编辑失败'.$this->model->getLastSql());
+                return Response::fail(1, '编辑失败');
             }
-            return Response::success([]);
+            return Response::fail(1,'模型不存在');
         }
-        $data = $this->model->where(['id' => $id])->find();
+        $data = $this->formData?:$this->model->where(['id' => $id])->find();
         $this->assign('formConfig', [
             'action' => $this->request->action(),
             'field' => $this->formField,
@@ -154,19 +171,55 @@ class ConsoleBase extends BaseController
         return $this->fetch('template:form');
     }
 
+    /**
+     * 状态更新基础
+     *
+     * @Author 马良 1826888766@qq.com
+     * @DateTime 2020-12-29 15:45:15
+     * @param [int|array] $id
+     * @return json
+     */
+    public function status($id)
+    {
+        if($this->request->isAjax()){
+            $field = $this->request->param('field','status');
+            $val = $this->request->param('val',null);
+            if(is_null($val)||!$field){
+                return Response::fail(1,'参数错误');
+            }
+            if ($this->model) {
+                $data = $this->model->update([$field=>$val],['id'=>$id]);
+                if ($data) {
+                    return Response::success($data, '修改成功');
+                }
+                return Response::fail(1, '修改失败');
+            }
+            return Response::fail(1,'模型不存在');
+        }
+        return Response::fail(1,'不支持的请求');
+    }
+
+    /**
+     * 删除基础
+     *
+     * @Author 马良 1826888766@qq.com
+     * @DateTime 2020-12-29 15:46:09
+     * @param [int|array] $id
+     * @return json
+     */
     public function del($id)
     {
         if ($this->request->isAjax()) {
             if ($this->model) {
-                $data = $this->model->where('id', $id)->delete();
+                $data = $this->model->destroy($id);
                 if ($data) {
                     return Response::success(true, '删除成功');
                 }
                 return Response::fail(1, '删除失败');
             }
-            return Response::fail(0, '未定义模型');
+            return Response::fail(1, '未定义模型');
         }
-        return Response::fail(0, '不支持当前访问');
+        return Response::fail(1, '不支持当前请求');
     }
 
     private function openIframe()

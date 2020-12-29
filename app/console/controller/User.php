@@ -21,7 +21,8 @@ class User extends ConsoleBase
         ['field' => 'mobile', 'label' => '手机号'],
         ['field' => 'password', 'type' => 'password', 'label' => '密码'],
         ['field' => 'password_confirm', 'type' => 'password', 'label' => '确认密码'],
-        ['field' => 'role_id', 'label' => '角色', 'type' => 'checkbox', 'value' => []],
+        ['field' => 'role_id[]', 'label' => '角色', 'type' => 'checkbox', 'value' => []],
+        ['field' => 'status', 'label' => '状态', 'type' => 'radio', 'value' => "0|禁用,1|启用",'default'=>1],
     ];
 
     public function index()
@@ -45,15 +46,18 @@ class User extends ConsoleBase
     {
         if (!$this->request->isAjax()) {
             $this->formField[6]['value'] = \app\common\model\Role::allSelect();
+            $data = $this->model->where(['id' => $id])->find()->toArray();
+            $data['role_id'] = explode(',',$data['role_id']);
+            $this->formData = $data;
         }
-        $data = $this->model->where(['id' => $id])->field("*,role_id as 'role_id[]'")->find();
-        $this->assign('formConfig', [
-            'action' => $this->request->action(),
-            'field' => $this->formField,
-            'method' => 'POST',
-            'data' => $data
-        ]);
-        return $this->fetch('template:form');
+        
+        return parent::edit($id);
+    }
+
+    public function role()
+    {
+    
+        return $this->fetch();   
     }
 
 }

@@ -322,8 +322,11 @@ layui.define([
             if (url && url !== "undefined") {
 
                 var dom = $(this),field=dom.attr('name'), status = 0, func = function () {
-                    var data = {};
-                    data[field] = status;
+                    var data = {
+                        edit_status:1
+                    };
+                    data['field'] = field;
+                    data['val'] = status;
                     url = setUrlParams(url,{id:dom.data('id')})
                     $.get(url, data, function (res) {
                         layui.layer.msg(res.msg);

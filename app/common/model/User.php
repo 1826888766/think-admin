@@ -43,14 +43,7 @@ class User extends Model
 
     public function roles()
     {
-        return $this->hasMany(Role::class, 'id', 'role_id');
+        return $this->hasMany(Role::class,'id', 'role_id');
     }
 
-    public function getRoleIdAttr($value)
-    {
-        if($value){
-            return explode(',', $value);
-        }
-        return [];
-    }
 }

@@ -137,8 +137,8 @@ function createFormItemHtml($item, $is_child = false)
             $item['default'] = is_array($item['default']) ?: explode(',', $item['default']);
             foreach ($item['value'] as $checkbox) {
                 $html .=  "<input lay-filter='mlFilterCheckbox' type='checkbox' " . (in_array($checkbox[0], $item['default']) ? 'checked' : '') . " class=layui-input
-                value={$checkbox[0]} title={$checkbox[1]} "." name='".$item['field']."[]' ".
-                "lay-skin=" . getField($item, 'skin', 'primary') . ">";
+                value={$checkbox[0]} title={$checkbox[1]} "." name='".$item['field'].
+                "' lay-skin=" . getField($item, 'skin', 'primary') . ">";
             }
             $html .= '</div>';
             break;
@@ -200,7 +200,7 @@ function createFormItemHtml($item, $is_child = false)
         $html .= "</div>";
     }
 
-    return htmlspecialchars_decode(htmlspecialchars($html));
+    return $html;
 }
 /**
  * 富文本编辑器
