@@ -27,11 +27,6 @@ class Role extends ConsoleBase
         return $this->fetch();
     }
 
-    public function add()
-    {
-        return parent::add();
-    }
-
     /**
      * 权限设置
      */

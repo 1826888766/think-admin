@@ -8,10 +8,9 @@
         <div class="layui-tab" lay-filter="module">
             <ul class="layui-tab-title">
                 {volist name="$module" id="vo"}
-                <li lay-id="{$key}" class="{$key==0?'layui-this':''}">
+                <li lay-id="{$vo.id}" class="{$key==0?'layui-this':''}">
                     {$vo.name}
                     <span style="margin-left: 10px"><i onclick=add('{:url("add")}',{module_id:'{$vo.id}'}) class="layui-icon layui-icon-add-circle"></i></span>
-
                 </li>
                 {/volist}
             </ul>
