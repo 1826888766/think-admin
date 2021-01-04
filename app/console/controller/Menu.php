@@ -18,10 +18,14 @@ class Menu extends ConsoleBase
         ['field' => 'name', 'label' => '菜单名称'],
         ['field' => 'url', 'label' => '打开链接'],
         ['field' => 'sort', 'label' => '排序'],
+        ['field' => 'target', 'label' => '跳转方式',"type" => 'radio', "default" => '_self', "value" => "_self|当前,_blank|新窗口"],
         ['field' => 'module_id', 'type' => 'hidden'],
+        ['field' => 'id', 'type' => 'hidden'],
+        ['field' => 'status', "type" => 'radio', "default" => 1, "value" => "0|禁用,1|启用", 'label' => '是否禁用'],
+        ['field' => 'type', "type" => 'radio', "default" => 1, "value" => "0|视图,1|按钮", 'label' => '菜单类型'],
         ['field' => 'is_show', "type" => 'radio', "default" => 1, "value" => "0|否,1|是", 'label' => '是否显示'],
         ['field' => 'is_auth', "type" => 'radio', "default" => 1, "value" => "0|否,1|是", 'label' => '是否验权'],
-        ['field' => 'status', "type" => 'radio', "default" => 1, "value" => "0|禁用,1|启用", 'label' => '是否禁用'],
+
     ];
 
     /**
@@ -33,7 +37,7 @@ class Menu extends ConsoleBase
     {
         if ($this->request->isAjax()) {
             $where = getSearchWhere($this->param);
-            $list = MenuModel::list($where, ['module']);
+            $list = MenuModel::where($where)->with(['module'])->select();
             return Response::layuiSuccess($list, count($list));
         }
         $module = \app\common\model\Module::order('id', 'asc')->select();

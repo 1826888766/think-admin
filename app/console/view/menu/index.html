@@ -10,7 +10,8 @@
                 {volist name="$module" id="vo"}
                 <li lay-id="{$vo.id}" class="{$key==0?'layui-this':''}">
                     {$vo.name}
-                    <span style="margin-left: 10px"><i onclick=add('{:url("add")}',{module_id:'{$vo.id}'}) class="layui-icon layui-icon-add-circle"></i></span>
+                    <span style="margin-left: 10px"><i onclick=add('',{module_id:'{$vo.id}'})
+                                                       class="layui-icon layui-icon-add-circle"></i></span>
                 </li>
                 {/volist}
             </ul>
@@ -21,103 +22,94 @@
 </div>
 <script type="text/html" id="toolsTpl">
     <div class="layui-btn-group">
-        {{# if (d.status == 1) { }}
-        {{# if (d.setting == 1) { }}
-        <span class="layui-btn layui-btn-sm layui-btn-normal" onclick="setting('{{d.id}}');">设置</span>
-        {{# } }}
-        <span class="layui-btn layui-btn-sm layui-btn-warm" onclick="uninstall('{{d.id}}');">卸载</span>
-        {{# } else if (d.status == 0) { }}
-        <span class="layui-btn layui-btn-sm" onclick="install('{{d.id}}');">安装</span>
-        <span class="layui-btn layui-btn-sm layui-btn-danger" onclick="del('{{d.id}}');">删除</span>
-        {{# } }}
+        <span class="layui-btn layui-btn-xs" onclick="add('{{d.id}}');">添加</span>
+        <span class="layui-btn layui-btn-xs" onclick="edit('{{d.id}}');">编辑</span>
+        <span class="layui-btn layui-btn-xs layui-btn-danger" onclick="del('{{d.id}}');">删除</span>
     </div>
 </script>
 <script>
     var $;
-    layui.use(['table', 'form', "ml", "jquery", "element"], function () {
-        var ml = layui.ml;
-        var table = layui.table;
+    layui.use(['treeTable', 'form', 'laytpl', "jquery", "element"], function () {
+        var table = layui.treeTable;
         var element = layui.element;
         $ = layui.jquery;
-        element.on('tab(module)', function (obj) {
-            table.reload("myTable", {
-                where: {
-                    module_id: $(this).attr('lay-id')
-                }
-            })
-        });
-        ml.render({
-            elem: "#myTable",
-            page: false,
+        var config = {
+            elem: '#myTable',// 必须
+            url: "{:url('index')}",
+            icon_key: 'name',// 必须
+            top_value: 0,
+            primary_key: 'id',
+            parent_key: 'parent_id',
+            hide_class: 'layui-hide',
+            icon: {
+                open: 'layui-icon layui-icon-triangle-d',
+                close: 'layui-icon layui-icon-triangle-r',
+                left: 20,
+            },
             where: {
-                module_id: '{$module?$module[0]["id"]:""}'
+                module_id: "{$module[0]['id']}",
             },
-            parseData: function (res) {
-                res.data = parseData(res.data);
-                return res
-            },
-            cols: [[
-                {'type': "checkbox"},
-                {'field': "sort", 'title': "排序", width: 60, edit: true},
-                {'field': "name", 'title': "菜单名称", width: 300},
-                {'field': "status", 'title': "状态", type: "switch"},
-                {'field': "is_auth", 'title': "是否验权", type: "switch"},
-                {'field': "is_show", 'title': "是否显示", type: "switch"},
-                {'field': "module_name", 'title': "所属模块", update: false},
+            cols: [
+                {key: 'name', title: '名称', width: '100px'},
+                {key: 'sort', title: '排序', width: '100px'},
+                {key: 'status', title: '状态', width: '100px'},
+                {key: 'is_auth', title: '是否验权', width: '100px'},
+                {key: 'is_show', title: '是否显示', width: '100px'},
+                {key: 'target', title: '跳转方式', width: '100px'},
+                {key: 'is_plugin', title: '是否插件', width: '100px'},
                 {
-                    'field': "target", 'title': "跳转方式", templet: function (d) {
-                        return d.target === "_self" ? '新窗口' : '当前窗口';
+                    key: 'tools', title: '操作', width: '150px', template: function (d) {
+                        return layui.laytpl($("#toolsTpl").html()).render(d)
                     }
                 },
-                {
-                    'field': "is_plugin", 'title': "是否插件", templet: function (d) {
-                        return d.is_plugin == 1 ? '是' : '否';
-                    }
-                },
-                {
-                    'field': "field", 'title': "操作", btns: [{
-                        title: "添加", class: "layui-btn-default", click: "add('{:url(\"add\")}',{id:'{{d.id}}'});",
-                    }, {
-                        title: "编辑", click: "layerOpen('{:url(\"edit\")}',{id:'{{d.id}}',module_id:'{{d.module_id}}'});",
-                    }, {
-                        title: "删除", class: "layui-btn-danger", click: "del('{:url(\"del\")}',{id:'{{d.id}}'});",
-                    }
-                    ]
-                }
-            ]],
-        })
+            ],
+            checked: {
+                key: 'id',
+                data: [],
+            },
+            is_click_icon: true,
+            is_checkbox: true,
+            is_cache: true,
+            end: function (e) {
+            },
+        };
+        element.on('tab(module)', function (obj) {
+            config.where = {
+                module_id: $(this).attr('lay-id')
+            }
+            table.render(config)
+        });
+        table.render(config)
     })
 
-    function add(url, params) {
-        params = params || {}
-        if (!params.hasOwnProperty('module_id')){
+    function add(id) {
+        var url = '{:url("add")}'
+        var params = {}
+        if (id) {
+            params['id'] = id;
+        }
+        if (!params.hasOwnProperty('module_id')) {
             params['module_id'] = $('.layui-tab-title .layui-this').attr('lay-id')
         }
         layerOpen(url, params)
     }
+    function edit(id) {
+        var url = '{:url("edit")}'
+        var params = {
+            id:id
+        }
+        if (!params.hasOwnProperty('module_id')) {
+            params['module_id'] = $('.layui-tab-title .layui-this').attr('lay-id')
+        }
+        layerOpen(url, params)
+    }
+
     function del(url, params) {
-        layui.$.post(url,params,function (res) {
+        layui.$.post(url, params, function (res) {
             layer.msg(res.msg)
-            if(res.code == 0){
+            if (res.code == 0) {
                 layui.ml.tableInstance.reload()
             }
         })
-    }
-
-    function parseData(data, level) {
-        var new_data = [];
-        var level_str = "|—";
-        level = level || 0
-        for ($i = 0; $i < level; $i++) {
-            level_str += "|—";
-        }
-        layui.each(data, function (index, datum) {
-            datum.name = level_str + datum.name
-            new_data.push(datum);
-            if ($.isArray(datum['child']) && datum['child'].length > 0) {
-                new_data = new_data.concat(parseData(datum['child'], level + 1));
-            }
-        })
-        return new_data;
     }
 </script>

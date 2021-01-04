@@ -1,22 +1,12 @@
 <!DOCTYPE html>
 <html>
 <head>
-  <meta charset="utf-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
-  <title>后台基础插件系统</title>
-  {load rel="stylesheet" href="/static/lib/layui/css/layui.css"}
-  {load rel="stylesheet" href="/static/css/common.css"}
-  {load href="/static/lib/layui/layui.js"}
-  {load href="/static/js/common.js"}
-
-    <script>
-        layui.config({
-            base:"/static/lib/modules/"
-        }).extend({
-            ml:"ml"
-        })
-        var iframe = {$iframe};
-    </script>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+    <title>后台基础插件系统</title>
+    {load rel="stylesheet" href="/static/lib/layui/css/layui.css"}
+    {load rel="stylesheet" href="/static/css/common.css"}
+    {include file="template:layui" /}
 
 </head>
 <body class="layui-layout-body">
@@ -24,34 +14,33 @@
     {include file="template:header" /}
     {include file="template:side" /}
     <div class="layui-body">
-      {switch $iframe}
-          {case 1}
-          <!-- iframe布局 -->
-          <div class="layui-tab layui-tab-brief" lay-allowClose="true" lay-filter="myIframe" style="margin: 0;">
+        {switch $iframe}
+        {case 1}
+        <!-- iframe布局 -->
+        <div class="layui-tab layui-tab-brief" lay-allowClose="true" lay-filter="myIframe" style="margin: 0;">
             <ul class="layui-tab-title bg-while">
-              <li class="layui-this home">欢迎页</li>
+                <li class="layui-this home">欢迎页</li>
             </ul>
             <div class="layui-tab-content iframe-list">
-              <div class="layui-tab-item layui-show">
-                <iframe class="iframe" src="{:url('welcome')}?iframe=1" frameborder="0"></iframe>
-              </div>
+                <div class="layui-tab-item layui-show">
+                    <iframe class="iframe" src="{:url('welcome')}?iframe=1" frameborder="0"></iframe>
+                </div>
             </div>
-          </div>
-          {/case}
-          {default /}
-          <!-- 单页布局 -->
-          {include file="template:crumb" /}
-          <div>
+        </div>
+        {/case}
+        {default /}
+        <!-- 单页布局 -->
+        {include file="template:crumb" /}
+        <div>
             {__CONTENT__}
-          </div>
-      {/switch}
-      {include file="template:footer" /}
+        </div>
+        {/switch}
+        {include file="template:footer" /}
     </div>
 </div>
 
-<script src="">
-  
-  {$script|raw}
+<script >
+    {$script | raw}
 </script>
 </body>
 </html>

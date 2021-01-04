@@ -3,6 +3,7 @@ declare (strict_types=1);
 
 namespace app\common\model;
 
+use think\helper\Str;
 use think\Model;
 
 /**
@@ -59,12 +60,12 @@ class Menu extends Model
      *
      * @return string|null
      */
-    public function getUrlAttr($value): ?string
+    public function getUrlAttr($value)
     {
-        if ($value) {
-            return url($value)->build();
+        if ($value && !(Str::startsWith($value, 'http://') || Str::startsWith($value, 'https://'))) {
+            return url($value)->domain(true)->build();
         }
-        return null;
+        return $value;
     }
 
     /**

@@ -1,6 +1,9 @@
 <div class="layui-card">
     <div class="layui-card-body">
         <div class="layui-form layui-form-pane" id="mySearch"></div>
+        <div>
+            <div onclick=layerOpen('{:url("add")}',[],"添加") class="layui-btn layui-btn-normal">添加</div>
+        </div>
         <table class="layui-table" lay-filter="myTable" id="myTable"></table>
     </div>
 </div>
@@ -22,17 +25,11 @@
                 {'field': "status", 'title': "是否显示", type: "switch"},
                 {
                     'field': "field", 'title': "操作", btns: [
-                        {title: "编辑", click: "edit('{{d.id}}');"},
+                        {title: "编辑", click: "layerOpen('{:url("edit")}?id={{d.id}}');"},
                         {title: "删除", class:"layui-btn-warm", click: "del('{{d.id}}');"}]
                 }
             ]]
         })
-        table.on("")
-
     })
-
-    function add(url, title) {
-        layerOpen(url, title)
-    }
 
 </script>

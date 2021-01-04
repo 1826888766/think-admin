@@ -161,7 +161,7 @@ class ConsoleBase extends BaseController
             }
             return Response::fail(1,'模型不存在');
         }
-        $data = $this->formData?:$this->model->where(['id' => $id])->find();
+        $data = $this->formData?:$this->model->where(['id' => $id])->find()->getData();
         $this->assign('formConfig', [
             'action' => $this->request->action(),
             'field' => $this->formField,

@@ -67,49 +67,42 @@ layui.use(['element', 'jquery', 'form'], function () {
     })
 })
 
-function formVal(filter,data){
-    layui.use(['form','jquery'],function(){
+function formVal(filter, data) {
+    layui.use(['form', 'jquery'], function () {
         var $ = layui.jquery;
-        console.log(data);
-        var dom = $('form[lay-filter="'+filter+'"]');
+        var dom = $('form[lay-filter="' + filter + '"]');
         var form = layui.form;
-        for(var key in data){
-           var index,input;
-            if(typeof(data[key]) == 'object'){
-                index = "[name='"+ key +"[]']";
-                input = dom.find(index);
-                console.log(key,input.attr("type"))
-            }else{
-                index = "[name='"+ key +"']";
-                input = dom.find(index);
-                console.log(key,input.attr("type"))
+        for (var key in data) {
+            var index, input;
+            if (!data.hasOwnProperty(key)) {
+                continue;
             }
-            if(!input.attr("type")) continue;
-            switch(input.attr("type")){
-                case "checkbox":
-                    if (typeof(data[key]) == 'object') {
-                        for(var j in data[key]) {
-                            dom.find(index+"[value='"+data[key][j]+"']").prop('checked', true)
-                        }
-                    } else {
-                        input.prop('checked', true);
+            if ($.isArray(data[key])) {
+                index = "[name='" + key + "[]']";
+                input = dom.find(index);
+            } else {
+                index = "[name='" + key + "']";
+                input = dom.find(index);
+            }
+            if (input.is('checkbox')) {
+                if (typeof (data[key]) == 'object') {
+                    for (var j in data[key]) {
+                        dom.find(index + "[value='" + data[key][j] + "']").prop('checked', true)
                     }
-                    break;
-                case "select":
-                    input.find('option[value="'+data[key]+'"]').prop("selected", true);
-                    break;
-                case "radio":
-                    dom.find(index+'[value="'+data[key]+'"]').prop('checked', true);
-                    break;
-                default:
-                    $(input[0]).val(data[key])
-                    console.log(data[key])
-                    break;
+                } else {
+                    input.prop('checked', true);
+                }
+            } else if (input.is('select')) {
+                input.find('option[value="' + data[key] + '"]').prop("selected", true);
+            } else if (input.is('radio')) {
+                dom.find(index + '[value="' + data[key] + '"]').prop('checked', true);
+            } else {
+                $(input[0]).val(data[key])
             }
         }
         form.render()
     })
-    
+
 }
 
 function layerOpen(url, params, title) {
