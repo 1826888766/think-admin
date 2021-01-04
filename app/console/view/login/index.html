@@ -1,0 +1,176 @@
+<!doctype html>
+<html lang="zh">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>超炫酷的html登录界面带CSS3动画特效 - 代码库</title>
+    <link rel="stylesheet" type="text/css" href="/static/login/css/default.css">
+    <!--必要样式-->
+    <link rel="stylesheet" type="text/css" href="/static/login/css/styles.css">
+    <!--[if IE]>
+    <script src="http://libs.useso.com/js/html5shiv/3.7/html5shiv.min.js"></script>
+    <![endif]-->
+</head>
+
+<body>
+<div class='login'>
+    <div class='login_title'>
+        <span>账号登录</span>
+    </div>
+    <form class='login_fields'>
+        <div class='login_fields__user'>
+            <div class='icon'>
+                <img src='/static/login/images/user_icon_copy.png'>
+            </div>
+            <input placeholder='账号或手机号' autocomplete="off" name="username" type='text'/>
+            <div class='validation'>
+                <img src='/static/login/images/tick.png'>
+            </div>
+        </div>
+        <div class='login_fields__password'>
+            <div class='icon'>
+                <img src='/static/login/images/lock_icon_copy.png'>
+            </div>
+            <input placeholder='密码' autocomplete="off" name="password" type='password'/>
+            <div class='validation'>
+                <img src='/static/login/images/tick.png'>
+            </div>
+        </div>
+        <div class='login_fields__submit'>
+            <input type='button' value='登录'>
+            <div class='forgot'>
+                <a href='#'>忘记密码?</a>
+            </div>
+        </div>
+    </form>
+    <div class='success'>
+        <h2>认证成功</h2>
+        <p>欢迎回来</p>
+    </div>
+    <div class='disclaimer'>
+        <p>简介</p>
+    </div>
+</div>
+<div class='authent'>
+    <img src='/static/login/images/puff.svg'>
+    <p>认证中...</p>
+</div>
+
+<script type="text/javascript" src='/static/login/js/stopExecutionOnTimeout.js?t=1'></script>
+<script type="text/javascript" src="/static/login/js/jquery-2.1.1.min.js"></script>
+<script type="text/javascript" src="/static/login/js/jquery-ui.min.js"></script>
+<script type="text/javascript" src="/static/login/js/Particleground.js"></script>
+<script>
+    $('input[type="button"]').click(function () {
+        showLoading();
+        $.ajax({
+            url: "{:url('index')}",
+            data: $("form").serializeArray(),
+            method: "POST",
+            success: function (res) {
+                if (res.code === 0) {
+                    setTimeout(function () {
+                        success()
+                    }, 1000)
+                } else {
+                    setTimeout(function () {
+                        fail(res.msg)
+                    }, 1000)
+                }
+            }, error: function () {
+                fail('网络请求失败')
+            }
+        })
+    });
+    $('input[type="text"],input[type="password"]').focus(function () {
+        $(this).prev().animate({'opacity': '1'}, 200);
+    });
+    $('input[type="text"],input[type="password"]').blur(function () {
+        $(this).prev().animate({'opacity': '.5'}, 200);
+    });
+    $('input[type="text"],input[type="password"]').keyup(function () {
+        if (!$(this).val() == '') {
+            $(this).next().animate({
+                'opacity': '1',
+                'right': '30'
+            }, 200);
+        } else {
+            $(this).next().animate({
+                'opacity': '0',
+                'right': '20'
+            }, 200);
+        }
+    });
+    var open = 0;
+    $('.tab').click(function () {
+        $(this).fadeOut(200, function () {
+            $(this).parent().animate({'left': '0'});
+        });
+    });
+
+    function success() {
+        hideLoading();
+        $('.login').removeClass('test');
+        $('.login div').fadeOut(123);
+        $(".success h2").text('认证成功')
+        $(".success p").text('1秒后跳转')
+        setTimeout(function () {
+            $('.success').fadeIn();
+        }, 123);
+        setTimeout(function () {
+            window.location.href = "{:url('console/index/index')}"
+        }, 1000)
+    }
+
+    function fail(msg) {
+        hideLoading();
+        $('.login').removeClass('test');
+        $('.login div').fadeOut(123);
+        $(".success h2").text('认证失败')
+        $(".success p").text(msg)
+        setTimeout(function () {
+            $('.success').fadeIn();
+        }, 123);
+
+    }
+
+    function showLoading() {
+        $('.login').addClass('test');
+
+        setTimeout(function () {
+            $('.login').addClass('testtwo');
+        }, 300);
+        $('.authent').show().animate({right: -320}, {
+            easing: 'easeOutQuint',
+            duration: 600,
+            queue: false
+        });
+        $('.authent').animate({opacity: 1}, {
+            duration: 200,
+            queue: false
+        }).addClass('visible');
+
+    }
+
+    function hideLoading() {
+
+        $('.authent').show().animate({right: 90}, {
+            easing: 'easeOutQuint',
+            duration: 600,
+            queue: false
+        });
+        $('.authent').animate({opacity: 0}, {
+            duration: 200,
+            queue: false
+        }).addClass('visible');
+        $('.login').removeClass('testtwo');
+    }
+
+    $('body').particleground({
+        dotColor: '#1b3273',
+        lineColor: '#1b3273'
+    });
+</script>
+</body>
+</html>

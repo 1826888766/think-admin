@@ -20,7 +20,7 @@ class Response
      *
      * @return \think\response\Json
      */
-    public static function success($data, $msg = "请求成功", $code = 0): \think\response\Json
+    public static function success($data = null, $msg = "请求成功", $code = 0): \think\response\Json
     {
         return json(["code" => $code, "msg" => $msg, "data" => []]);
     }
@@ -33,7 +33,7 @@ class Response
      *
      * @return \think\response\Json
      */
-    public static function fail($code, $msg = ""): \think\response\Json
+    public static function fail($code=1, $msg = ""): \think\response\Json
     {
         return json(["code" => $code, "msg" => $msg, "data" => []]);
     }

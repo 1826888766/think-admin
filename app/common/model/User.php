@@ -15,7 +15,7 @@ class User extends Model
     //
     public static function allPage($limit = 10)
     {
-        return self::with(['roles'])->paginate($limit);
+        return self::where([])->append(['roles'])->paginate($limit);
     }
 
     public static function onAfterInsert(Model $model): void
@@ -27,9 +27,31 @@ class User extends Model
     {
         if ($model->password) {
             $model->password = create_password($model->password);
-        }else{
+        } else {
             $model->hidden(['password']);
         }
+    }
+
+    public static function login($user)
+    {
+        $_user = self::where('username', $user['username'])->find();
+        if (!$_user) {
+            return "用户或手机号不存在";
+        }
+        if (!verity_password($user['password'], $_user['password'])) {
+            return "密码错误";
+        }
+        session('login_token', $_user);
+        return true;
+    }
+
+    public static function checkLogin()
+    {
+        $user = session('login_token');
+        if ($user) {
+            return $user;
+        }
+        return false;
     }
 
     public function setRoleIdAttr($value): string
@@ -40,9 +62,27 @@ class User extends Model
         return '';
     }
 
-    public function roles()
+    public function getRoleIdAttr($value): array
     {
-        return $this->hasMany(Role::class,'id', 'role_id');
+        if ($value) {
+            return explode(',', $value);
+        }
+        return [];
+    }
+
+    public function setMenuIdAttr($value): string
+    {
+        return serialize($value);
+    }
+
+    public function getMenuIdAttr($value)
+    {
+        return unserialize($value);
+    }
+
+    public function getRolesAttr()
+    {
+        return Role::where('id', 'in', $this->getData('role_id'))->field('id,name')->select();
     }
 
 }

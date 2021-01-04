@@ -158,8 +158,13 @@
         layerOpen(url, params)
     }
 
-    function del(url, params) {
-        layui.$.post(url, params, function (res) {
+    function del(id) {
+        var url = '{:url("del")}'
+        var params = {}
+        if (id) {
+            params['id'] = id;
+        }
+        layui.$.post(setUrlParams(url), params, function (res) {
             layer.msg(res.msg)
             if (res.code == 0) {
                 table.render()

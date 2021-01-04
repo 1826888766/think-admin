@@ -57,21 +57,32 @@ class Role extends Model
         return $this->belongsToMany(Menu::class, RoleMenu::class, 'menu_id', 'role_id');
     }
 
-    public static function getCheckMenuId($id): array
+    public static function getCheckMenuId($id, $menu_diff = []): array
     {
         $role = self::where(['id' => $id])->find();
         $checked = [];
         foreach ($role->roles as $value) {
             $checked[] = $value['id'];
         }
+        if (isset($menu_diff['add']) && is_array($menu_diff['add'])) {
+            $checked = array_merge_recursive($checked, $menu_diff['add']);
+        }
+        if (isset($menu_diff['del']) && is_array($menu_diff['del'])) {
+            foreach ($menu_diff['del'] as $item) {
+                $index = array_search(intval($item), $checked);
+                if (false !== $index) {
+                    unset($checked[$index]);
+                }
+            }
+        }
         return $checked;
     }
 
-    public static function addRoleMenu($role_id, $menu)
+    public static function addRoleMenu($role_id, $menu_ids)
     {
         $role = self::where(['id' => $role_id])->find();
         $role->roles()->detach();
-        return $role->roles()->attach($menu);
+        return $role->roles()->attach(array_values($menu_ids));
     }
 
 }

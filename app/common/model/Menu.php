@@ -3,6 +3,7 @@ declare (strict_types=1);
 
 namespace app\common\model;
 
+use think\facade\Cache;
 use think\helper\Str;
 use think\Model;
 
@@ -68,6 +69,18 @@ class Menu extends Model
         return $value;
     }
 
+    public static function onBeforeWrite(Model $model)
+    {
+        if (Cache::has('all_menu')) {
+            Cache::delete('all_menu');
+        }
+    }
+    public static function onBeforeDelete(Model $model)
+    {
+        if (Cache::has('all_menu')) {
+            Cache::delete('all_menu');
+        }
+    }
     /**
      * 关联载入
      *

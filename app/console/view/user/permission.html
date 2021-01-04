@@ -1,12 +1,19 @@
-<form class="layui-form">
-    {volist name="$auth" id="vo"}
-    <fieldset class="layui-elem-field layui-field-title">
-        <legend>{$vo.title}</legend>
-        <div class="layui-field-box">
-            <div id="tree-{$vo.id}">{$vo.title}</div>
+<form class="layui-form" >
+    <div class="layui-tab layui-tab-card" style="background: #FFFFFF">
+        <ul class="layui-tab-title">
+            {volist name="$auth" id="vo"}
+            <li class="{$key!=0?'':'layui-this'}">{$vo.title}</li>
+            {/volist}
+        </ul>
+        <div class="layui-tab-content" style="">
+            {volist name="$auth" id="vo"}
+            <div class="layui-tab-item {$key!=0?'':'layui-show'}">
+                <div id="tree-{$vo.id}">{$vo.title}</div>
+            </div>
+            {/volist}
         </div>
-    </fieldset>
-    {/volist}
+    </div>
+
     <div class="layui-form-item">
         <label class="layui-form-label"></label>
         <div style="height: 50px">
@@ -20,12 +27,12 @@
     </div>
 </form>
 <script>
-    layui.use(['tree'], function () {
+    layui.use(['tree','element'], function () {
         var tree = layui.tree;
         {volist name="$auth" id="vo"}
         tree.render({
-            elem: '#tree-{$vo.id}'  //绑定元素
-            , data: {:json_encode($vo.children,256)},
+            elem: '#tree-{$vo.id}',  //绑定元素
+            data: [{id:"",spread:true,children:{:json_encode($vo.children,256)},title:"{$vo.title}"}],
             showCheckbox:true,
             onlyIconControl:true,
             showLine:true

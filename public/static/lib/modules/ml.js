@@ -111,10 +111,10 @@ layui.define([
     function createBtns(btns) {
         var html = [];
         $.each(btns, function () {
-            var btn = "<span onclick=" + this.click + " class='layui-btn layui-btn-sm " + (this.class || 'layui-btn-normal') + " '>" + this.title + "</span>"
+            var btn = "<span onclick=" + this.click + " class='layui-btn layui-btn-xs " + (this.class || 'layui-btn-normal') + " '>" + this.title + "</span>"
             html.push(btn)
         })
-        return "<div><div class='layui-btn-group'>" + html.join("") + "</div></div>"
+        return "<div><div class='layui-btn-group '>" + html.join("") + "</div></div>"
     }
 
     function createSwitch(row) {

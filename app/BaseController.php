@@ -5,6 +5,7 @@ namespace app;
 
 use think\App;
 use think\exception\ValidateException;
+use think\facade\View;
 use think\Validate;
 
 /**
@@ -23,6 +24,8 @@ abstract class BaseController
      * @var \think\App
      */
     protected $app;
+
+    protected $view;
 
     /**
      * 是否批量验证
@@ -45,6 +48,7 @@ abstract class BaseController
     {
         $this->app     = $app;
         $this->request = $this->app->request;
+        $this->view = View::instance();
 
         // 控制器初始化
         $this->initialize();
@@ -52,7 +56,8 @@ abstract class BaseController
 
     // 初始化
     protected function initialize()
-    {}
+    {
+    }
 
     /**
      * 验证数据
@@ -92,6 +97,69 @@ abstract class BaseController
         }else{
             return $v->getError();
         }
+    }
+
+    /**
+     * 渲染模板
+     *
+     * @Author   马良 1826888766@qq.com
+     * @DateTime 2020-12-23 10:00:06
+     *
+     * @param string $template
+     * @param array  $vars
+     *
+     * @return string
+     */
+    public function fetch($template = "", $vars = []): string
+    {
+        return $this->view->fetch($template, $vars);
+    }
+
+    /**
+     * 渲染内容
+     *
+     * @Author   马良 1826888766@qq.com
+     * @DateTime 2020-12-23 13:42:32
+     *
+     * @param string $content
+     * @param array  $vars
+     *
+     * @return string
+     */
+    public function display($content = "", $vars = []): string
+    {
+        return $this->view->display($content, $vars);
+    }
+
+    /**
+     * 模板赋值
+     *
+     * @Author   马良 1826888766@qq.com
+     * @DateTime 2020-12-23 13:42:02
+     *
+     * @param string|array $name
+     * @param mixed        $value
+     *
+     * @return \think\View
+     */
+    public function assign($name, $value = null): \think\View
+    {
+        return $this->view->assign($name, $value);
+    }
+
+    /**
+     * 模板引擎
+     *
+     * @Author   马良 1826888766@qq.com
+     * @DateTime 2020-12-23 13:43:21
+     *
+     * @param string $type
+     *
+     * @return \think\View
+     */
+    public function engine($type = 'Think'): \think\View
+    {
+        return $this->view = View::engine($type);
     }
 
 }

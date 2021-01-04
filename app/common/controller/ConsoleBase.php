@@ -4,6 +4,7 @@ namespace app\common\controller;
 
 use app\BaseController;
 use app\common\model\Module;
+use app\common\model\User;
 use think\facade\View;
 use think\Model;
 
@@ -18,12 +19,6 @@ class ConsoleBase extends BaseController
 
     use \think\Jump;
 
-    /**
-     * 视图实例
-     *
-     * @var \think\View
-     */
-    protected $view;
     protected $param = [];
     protected $checkLogin = true;
     protected $checkAuth = true;
@@ -41,6 +36,10 @@ class ConsoleBase extends BaseController
     // 编辑验证场景
     protected $validateEditScene = "";
     protected $formData = [];
+    /**
+     * @var Model
+     */
+    protected $user = null;
 
     /**
      * 初始化操作
@@ -50,6 +49,7 @@ class ConsoleBase extends BaseController
      */
     public function initialize()
     {
+        $this->initAuth();
         if (!$this->request->isAjax()) {
             $this->initView();
             $this->initMenu();
@@ -72,7 +72,6 @@ class ConsoleBase extends BaseController
      */
     private function initView($iframe = 1)
     {
-        $this->view = View::instance();
         $is_iframe = $this->request->param('iframe', 0);
         if ($is_iframe == 1) {
             $this->view->layout('iframe');
@@ -83,11 +82,8 @@ class ConsoleBase extends BaseController
                 $this->openIframe();
             }
         }
-
         $this->assign('script', "");
         $this->assign('iframe', $iframe);
-
-
     }
 
     /**
@@ -98,10 +94,29 @@ class ConsoleBase extends BaseController
         $menus = Module::allMenu();
         $this->assign('menus', $menus);
     }
+
+    private function initAuth()
+    {
+        if ($this->checkLogin) {
+            $this->checkLogin();
+        }
+    }
+
+    /**
+     * 检查登录
+     */
+    private function checkLogin()
+    {
+        $this->user = User::checkLogin();
+        if (false === $this->user) {
+            $this->redirect(url('login/index')->domain(true)->build());
+        }
+    }
+
     /**
      * 添加基础操作
      *
-     * @Author 马良 1826888766@qq.com
+     * @Author   马良 1826888766@qq.com
      * @DateTime 2020-12-29 15:44:35
      */
     public function add()
@@ -133,15 +148,17 @@ class ConsoleBase extends BaseController
     /**
      * 编辑基础
      *
-     * @Author 马良 1826888766@qq.com
-     * @DateTime 2020-12-29 15:45:42
-     * @param [int] $id
+     * @Author        马良 1826888766@qq.com
+     * @DateTime      2020-12-29 15:45:42
+     *
+     * @param         [int] $id
+     *
      * @return string||json
      */
     public function edit($id)
     {
         if ($this->request->isAjax()) {
-            if(isset($this->param['edit_status'])){
+            if (isset($this->param['edit_status'])) {
                 return $this->status($id);
             }
             if ($this->validate) {
@@ -158,9 +175,9 @@ class ConsoleBase extends BaseController
                 }
                 return Response::fail(1, '编辑失败');
             }
-            return Response::fail(1,'模型不存在');
+            return Response::fail(1, '模型不存在');
         }
-        $data = $this->formData?:$this->model->where(['id' => $id])->find()->getData();
+        $data = $this->formData ?: $this->model->where(['id' => $id])->find()->getData();
         $this->assign('formConfig', [
             'action' => $this->request->action(),
             'field' => $this->formField,
@@ -173,38 +190,38 @@ class ConsoleBase extends BaseController
     /**
      * 状态更新基础
      *
-     * @Author 马良 1826888766@qq.com
+     * @Author   马良 1826888766@qq.com
      * @DateTime 2020-12-29 15:45:15
-     * @param [int|array] $id
-     * @return json
+     *
+     * @param    [int|array] $id
      */
     public function status($id)
     {
-        if($this->request->isAjax()){
-            $field = $this->request->param('field','status');
-            $val = $this->request->param('val',null);
-            if(is_null($val)||!$field){
-                return Response::fail(1,'参数错误');
+        if ($this->request->isAjax()) {
+            $field = $this->request->param('field', 'status');
+            $val = $this->request->param('val', null);
+            if (is_null($val) || !$field) {
+                return Response::fail(1, '参数错误');
             }
             if ($this->model) {
-                $data = $this->model->update([$field=>$val],['id'=>$id]);
+                $data = $this->model->update([$field => $val], ['id' => $id]);
                 if ($data) {
                     return Response::success($data, '修改成功');
                 }
                 return Response::fail(1, '修改失败');
             }
-            return Response::fail(1,'模型不存在');
+            return Response::fail(1, '模型不存在');
         }
-        return Response::fail(1,'不支持的请求');
+        return Response::fail(1, '不支持的请求');
     }
 
     /**
      * 删除基础
      *
-     * @Author 马良 1826888766@qq.com
+     * @Author   马良 1826888766@qq.com
      * @DateTime 2020-12-29 15:46:09
-     * @param [int|array] $id
-     * @return json
+     *
+     * @param    [int|array] $id
      */
     public function del($id)
     {
@@ -234,67 +251,5 @@ class ConsoleBase extends BaseController
 
     }
 
-    /**
-     * 渲染模板
-     *
-     * @Author   马良 1826888766@qq.com
-     * @DateTime 2020-12-23 10:00:06
-     *
-     * @param string $template
-     * @param array  $vars
-     *
-     * @return string
-     */
-    public function fetch($template = "", $vars = []): string
-    {
-        return $this->view->fetch($template, $vars);
-    }
-
-    /**
-     * 渲染内容
-     *
-     * @Author   马良 1826888766@qq.com
-     * @DateTime 2020-12-23 13:42:32
-     *
-     * @param string $content
-     * @param array  $vars
-     *
-     * @return string
-     */
-    public function display($content = "", $vars = []): string
-    {
-        return $this->view->display($content, $vars);
-    }
-
-    /**
-     * 模板赋值
-     *
-     * @Author   马良 1826888766@qq.com
-     * @DateTime 2020-12-23 13:42:02
-     *
-     * @param string|array $name
-     * @param mixed        $value
-     *
-     * @return \think\View
-     */
-    public function assign($name, $value = null): \think\View
-    {
-        return $this->view->assign($name, $value);
-    }
-
-    /**
-     * 模板引擎
-     *
-     * @Author   马良 1826888766@qq.com
-     * @DateTime 2020-12-23 13:43:21
-     *
-     * @param string $type
-     *
-     * @return \think\View
-     */
-    public function engine($type = 'Think'): \think\View
-    {
-        return $this->view = View::engine($type);
-    }
 
 }
