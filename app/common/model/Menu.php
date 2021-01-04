@@ -60,7 +60,7 @@ class Menu extends Model
      *
      * @return string|null
      */
-    public function getUrlAttr($value)
+    public function getUrlAttr($value): string
     {
         if ($value && !(Str::startsWith($value, 'http://') || Str::startsWith($value, 'https://'))) {
             return url($value)->domain(true)->build();

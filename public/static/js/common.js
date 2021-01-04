@@ -36,7 +36,45 @@ layui.use(['element', 'jquery', 'form'], function () {
         renderModules(menus);
         renderMenus(menus[0] ? menus[0].menu : [])
     }
+    form.on("switch(changeSwitch)", function (obj) {
+        var url = $(this).data('url')
+        if (url && url !== "undefined") {
 
+            var dom = $(this), field = dom.attr('name'), status = 0, func = function () {
+                var data = {
+                    edit_status: 1
+                };
+                data['field'] = field;
+                data['val'] = status;
+                url = setUrlParams(url, {id: dom.data('id')})
+                $.get(url, data, function (res) {
+                    layui.layer.msg(res.msg);
+                    if (res.code != 0) {
+                        dom.trigger('click');
+                        form.render('checkbox');
+                    }
+                });
+            };
+            if (this.checked) {
+                status = 1;
+            }
+            var confirm = $(this).attr('confirm');
+            if (confirm === undefined) {
+                func();
+            } else {
+                layer.confirm(confirm === 'undefined' ? '你确定要执行操作吗？' : confirm, {
+                    title: false,
+                    closeBtn: 0
+                }, function (index) {
+                    func();
+                }, function () {
+                    dom.trigger('click');
+                    form.render('checkbox');
+                });
+            }
+        }
+        return false;
+    })
     form.on("submit(mlFormSubmit)", function (obj) {
         var action = $(obj.form).attr('action'), timeout = function () {
             setTimeout(function () {
@@ -84,7 +122,10 @@ function formVal(filter, data) {
                 index = "[name='" + key + "']";
                 input = dom.find(index);
             }
-            if (input.is('checkbox')) {
+            if (input.length == 0) {
+                continue;
+            }
+            if ($(input[0]).attr('type') === 'checkbox') {
                 if (typeof (data[key]) == 'object') {
                     for (var j in data[key]) {
                         dom.find(index + "[value='" + data[key][j] + "']").prop('checked', true)
@@ -92,9 +133,9 @@ function formVal(filter, data) {
                 } else {
                     input.prop('checked', true);
                 }
-            } else if (input.is('select')) {
+            } else if ($(input[0]).is('select')) {
                 input.find('option[value="' + data[key] + '"]').prop("selected", true);
-            } else if (input.is('radio')) {
+            } else if ($(input[0]).attr('type') === 'radio') {
                 dom.find(index + '[value="' + data[key] + '"]').prop('checked', true);
             } else {
                 $(input[0]).val(data[key])

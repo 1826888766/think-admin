@@ -16,7 +16,7 @@
                 {/volist}
             </ul>
         </div>
-        <table class="layui-table" style="margin: 0" lay-filter="myTable" id="myTable"></table>
+        <table class="layui-table layui-form" style="margin: 0" lay-filter="myTable" id="myTable"></table>
 
     </div>
 </div>
@@ -27,10 +27,26 @@
         <span class="layui-btn layui-btn-xs layui-btn-danger" onclick="del('{{d.id}}');">删除</span>
     </div>
 </script>
+<script type="text/html" id="statusTpl">
+    <input type="checkbox" {{d.status==1?'checked':''}} data-id="{{d.id}}" name="status" data-url="{:url('edit')}"
+           lay-filter="changeSwitch"
+           lay-skin="switch" lay-text="是|否">
+</script>
+<script type="text/html" id="is_showTpl">
+    <input type="checkbox" {{d.is_show==1?'checked':''}} data-id="{{d.id}}" name="is_show" data-url="{:url('edit')}"
+           lay-filter="changeSwitch"
+           lay-skin="switch" lay-text="是|否">
+</script>
+<script type="text/html" id="is_authTpl">
+    <input type="checkbox" {{d.is_auth==1?'checked':''}} data-id="{{d.id}}" name="is_auth" data-url="{:url('edit')}"
+           lay-filter="changeSwitch"
+           lay-skin="switch" lay-text="是|否">
+</script>
 <script>
     var $;
     layui.use(['treeTable', 'form', 'laytpl', "jquery", "element"], function () {
         var table = layui.treeTable;
+        var form = layui.form;
         var element = layui.element;
         $ = layui.jquery;
         var config = {
@@ -51,12 +67,31 @@
             },
             cols: [
                 {key: 'name', title: '名称', width: '100px'},
-                {key: 'sort', title: '排序', width: '100px'},
-                {key: 'status', title: '状态', width: '100px'},
-                {key: 'is_auth', title: '是否验权', width: '100px'},
-                {key: 'is_show', title: '是否显示', width: '100px'},
+                {
+                    key: 'sort', title: '排序', width: "80px", template: function (d) {
+                        return "<input value='" + d.sort + "' class='layui-input' />"
+                    }
+                },
+                {key: 'url', title: '跳转链接',},
+
+                {
+                    key: 'status', title: '状态', width: '100px', template: function (d) {
+                        return layui.laytpl($("#statusTpl").html()).render(d)
+                    }
+                },
+                {
+                    key: 'is_auth', title: '是否验权', width: '100px',
+                    template: function (d) {
+                        return layui.laytpl($("#is_authTpl").html()).render(d)
+                    }
+                },
+                {
+                    key: 'is_show', title: '是否显示', width: '100px',
+                    template: function (d) {
+                        return layui.laytpl($("#is_showTpl").html()).render(d)
+                    }
+                },
                 {key: 'target', title: '跳转方式', width: '100px'},
-                {key: 'is_plugin', title: '是否插件', width: '100px'},
                 {
                     key: 'tools', title: '操作', width: '150px', template: function (d) {
                         return layui.laytpl($("#toolsTpl").html()).render(d)
@@ -71,6 +106,7 @@
             is_checkbox: true,
             is_cache: true,
             end: function (e) {
+                form.render()
             },
         };
         element.on('tab(module)', function (obj) {
@@ -93,10 +129,11 @@
         }
         layerOpen(url, params)
     }
+
     function edit(id) {
         var url = '{:url("edit")}'
         var params = {
-            id:id
+            id: id
         }
         if (!params.hasOwnProperty('module_id')) {
             params['module_id'] = $('.layui-tab-title .layui-this').attr('lay-id')
@@ -108,7 +145,7 @@
         layui.$.post(url, params, function (res) {
             layer.msg(res.msg)
             if (res.code == 0) {
-                layui.ml.tableInstance.reload()
+                table.render()
             }
         })
     }
