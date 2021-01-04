@@ -37,7 +37,7 @@ class Menu extends ConsoleBase
     {
         if ($this->request->isAjax()) {
             $where = getSearchWhere($this->param);
-            $list = MenuModel::where($where)->with(['module'])->select();
+            $list = MenuModel::where($where)->order('sort asc')->with(['module'])->select();
             $newList = [];
             foreach ($list as $item) {
                 $newList[] = $item->getData();

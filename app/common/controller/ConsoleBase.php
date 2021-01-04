@@ -31,7 +31,7 @@ class ConsoleBase extends BaseController
     protected $formField = [];
     // 模型
     /**
-     * @var Model
+     * @var \think\Model
      */
     protected $model = "";
     // 验证器
@@ -103,7 +103,6 @@ class ConsoleBase extends BaseController
      *
      * @Author 马良 1826888766@qq.com
      * @DateTime 2020-12-29 15:44:35
-     * @return string||json
      */
     public function add()
     {

@@ -69,7 +69,7 @@
                 {key: 'name', title: '名称', width: '100px'},
                 {
                     key: 'sort', title: '排序', width: "80px", template: function (d) {
-                        return "<input value='" + d.sort + "' class='layui-input' />"
+                        return "<input data-id='" + d.id + "' type='text' value='" + d.sort + "' class='sort layui-input' />"
                     }
                 },
                 {key: 'url', title: '跳转链接',},
@@ -115,6 +115,23 @@
             }
             table.render(config)
         });
+        $("#myTable").on("change", ".sort", function () {
+            var sort = Number($(this).val())
+            if (!$.isNumeric(sort)) {
+                return layer.msg('请输入数字');
+            }
+            $.post("{:url('edit')}", {
+                edit_status: 1,
+                field: "sort",
+                val:sort,
+                id: $(this).data('id')
+            }, function (res) {
+                layer.msg(res.msg)
+                if (res.code == 0) {
+                    table.render()
+                }
+            })
+        })
         table.render(config)
     })
 
