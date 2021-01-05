@@ -1,20 +1,17 @@
 <div class="layui-header">
     <div class="layui-logo">Think Admin</div>
-    <!-- 头部区域（可配合layui已有的水平导航） -->
-    <ul class="layui-nav layui-layout-left" lay-filter="myModule" id="myModule">
-
-    </ul>
+    <ul class="layui-nav layui-layout-left" lay-filter="myModule" id="myModule"></ul>
     <ul class="layui-nav layui-layout-right">
         <li class="layui-nav-item">
             <a href="javascript:;">
-                <img src="http://t.cn/RCzsdCq" class="layui-nav-img">
-                贤心
+                <img src="{$user.avatar|default='http://t.cn/RCzsdCq'}" class="layui-nav-img">
+                {$user.nickname|default=''}
             </a>
             <dl class="layui-nav-child">
-                <dd><a href="">基本资料</a></dd>
-                <dd><a href="">安全设置</a></dd>
+                <dd><a href="{:url('login/info')}">基本资料</a></dd>
+                <dd><a href="{:url('login/token')}">安全设置</a></dd>
             </dl>
         </li>
-        <li class="layui-nav-item"><a href="">退了</a></li>
+        <li class="layui-nav-item"><a href="{:url('login/logout')}">退了</a></li>
     </ul>
 </div>

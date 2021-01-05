@@ -3,6 +3,7 @@ declare (strict_types=1);
 
 namespace app\common\model;
 
+use think\facade\Cache;
 use think\Model;
 
 /**
@@ -83,6 +84,20 @@ class Role extends Model
         $role = self::where(['id' => $role_id])->find();
         $role->roles()->detach();
         return $role->roles()->attach(array_values($menu_ids));
+    }
+
+    public static function checkAuth(?Model $user, $menu_id)
+    {
+        if (!$user) {
+            return false;
+        }
+        $checked = self::getCheckMenuId($user->role_id, $user->menu_id);
+        if (in_array($menu_id, $checked)) {
+            return true;
+        }
+
+        return false;
+
     }
 
 }

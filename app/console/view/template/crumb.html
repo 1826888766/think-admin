@@ -1,8 +1,12 @@
 <div class="padding bg-while">
   <span class="layui-breadcrumb" lay-separator="-">
-    <a href="">首页</a>
-    <a href="">国际新闻</a>
-    <a href="">亚太地区</a>
-    <a><cite>正文</cite></a>
+
+    {volist name="$crumb" id="vo"}
+    {if $key == count($crumb) - 1}
+        <a><cite>{$vo.name}</cite></a>
+    {else /}
+        <a href="{$vo.url}">{$vo.name}</a>
+    {/if}
+    {/volist}
   </span>
 </div>

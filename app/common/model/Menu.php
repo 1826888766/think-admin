@@ -54,6 +54,29 @@ class Menu extends Model
         return self::parseSelect($data->toArray(), $theme);
     }
 
+    public static function getCurrentMenu($url)
+    {
+        // 查询出所有符合条件的
+        return self::where(['url' => $url])->where('status', 1)->field('id,name,url,is_auth')->find();
+
+    }
+
+    public static function crumbMenu($id)
+    {
+        $menus = [];
+        $menu = self::where(['id' => $id])->where('status', 1)->field('id,name,url,is_auth,parent_id')->find();
+        if ($menu) {
+            $menu = $menu->toArray();
+            if ($menu['parent_id'] != 0) {
+                array_unshift($menus, ...self::getCurrentMenu($menu['parent_id']));
+            } else {
+                array_unshift($menus, $menu);
+            }
+        }
+
+        return $menus;
+    }
+
     /**
      * url获取器
      *
@@ -75,12 +98,14 @@ class Menu extends Model
             Cache::delete('all_menu');
         }
     }
+
     public static function onBeforeDelete(Model $model)
     {
         if (Cache::has('all_menu')) {
             Cache::delete('all_menu');
         }
     }
+
     /**
      * 关联载入
      *
@@ -109,6 +134,7 @@ class Menu extends Model
         return self::list($where, $with);
     }
 
+
     public static function list($where = [], $with = [])
     {
 
@@ -119,6 +145,64 @@ class Menu extends Model
             $item->setAttr('child', $menu);
         });
         return $first;
+    }
+
+    /**
+     * 获取全部菜单
+     *
+     * @param array $with
+     *
+     * @return \think\Collection
+     */
+    public static function allMenu($with = [])
+    {
+        $where = [
+            'status' => 1,
+            'is_show' => 1
+        ];
+        $module = Module::where($where)->select();
+        $module->each(function ($item) use ($with) {
+            $where = [
+                'is_show' => 1,
+                'status' => 1,
+                'module_id' => $item->id,
+                'parent_id' => 0,
+            ];
+            $menu = self::list($where, $with);
+            $item->setAttr('child', $menu);
+        });
+        return $module;
+    }
+
+    /**
+     * 获取拥有权限的菜单
+     *
+     * @param       $menuId
+     * @param array $with
+     *
+     * @return \think\Collection
+     */
+    public static function listByIds($menuId, $with = [])
+    {
+        $where = [
+            'is_show' => 1,
+            'status' => 1,
+            'id' => $menuId,
+        ];
+        $module_id = self::where($where)->field('module_id')->group('module_id')->column('module_id');
+        $module = Module::where(['id' => $module_id])->select();
+        $module->each(function ($item) use ($menuId, $with) {
+            $where = [
+                'is_show' => 1,
+                'status' => 1,
+                'module_id' => $item->id,
+                'id' => $menuId,
+                'parent_id' => 0,
+            ];
+            $menu = self::list($where, $with);
+            $item->setAttr('child', $menu);
+        });
+        return $module;
     }
 
     /**

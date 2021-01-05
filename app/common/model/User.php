@@ -38,8 +38,21 @@ class User extends Model
         if (!$_user) {
             return "用户或手机号不存在";
         }
+
+        $password_fail = $_user->password_fail;
+        $password_fail = $password_fail ? $password_fail : 0;
+        $password_fail_number = 5;
+        if ($password_fail >= $password_fail_number) {
+            return "连续登录{$password_fail}次错误,请联系管理员";
+        }
+        if ($_user->status != 1) {
+            return "您已被管理员禁用";
+        }
         if (!verity_password($user['password'], $_user['password'])) {
-            return "密码错误";
+            $password_fail += 1;
+            $_user->password_fail = $password_fail;
+            $_user->save();
+            return "密码错误，次数{$password_fail},错误{$password_fail_number}次将被禁用";
         }
         session('login_token', $_user);
         return true;

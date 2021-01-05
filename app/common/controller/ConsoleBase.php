@@ -3,7 +3,9 @@
 namespace app\common\controller;
 
 use app\BaseController;
+use app\common\model\Menu;
 use app\common\model\Module;
+use app\common\model\Role;
 use app\common\model\User;
 use think\facade\View;
 use think\Model;
@@ -22,7 +24,8 @@ class ConsoleBase extends BaseController
     protected $param = [];
     protected $checkLogin = true;
     protected $checkAuth = true;
-
+    protected $iframe = 0;
+    protected $layout = "layout";
     protected $formField = [];
     // 模型
     /**
@@ -50,11 +53,16 @@ class ConsoleBase extends BaseController
     public function initialize()
     {
         $this->initAuth();
+        // 判断是否为iframe子页面
+        $is_iframe = $this->request->param('iframe', 0);
+        if ($is_iframe == 1) {
+            $this->layout = 'iframe';
+        }
         if (!$this->request->isAjax()) {
             $this->initView();
             $this->initMenu();
         }
-        $this->param = request()->param();
+        $this->param = $this->request->param();
         unset($this->param['iframe']);
         if ($this->model) {
             $this->model = model($this->model);
@@ -70,20 +78,17 @@ class ConsoleBase extends BaseController
      * @DateTime 2020-12-23 15:59:30
      * @return void
      */
-    private function initView($iframe = 1)
+    private function initView()
     {
-        $is_iframe = $this->request->param('iframe', 0);
-        if ($is_iframe == 1) {
-            $this->view->layout('iframe');
-        } else {
-            $this->view->layout('layout');
-            if ($iframe == 1) {
-                // 是iframe布局
-                $this->openIframe();
-            }
+        $this->view->layout($this->layout);
+        // 如果是layout布局并且不是iframe子窗口
+        if ($this->iframe == 1 && $this->layout == "layout") {
+            // 是iframe布局
+            $this->openIframe();
         }
         $this->assign('script', "");
-        $this->assign('iframe', $iframe);
+        $this->assign('iframe', $this->iframe);
+
     }
 
     /**
@@ -91,14 +96,29 @@ class ConsoleBase extends BaseController
      */
     private function initMenu()
     {
-        $menus = Module::allMenu();
+        $menus = Module::allMenu($this->user);
         $this->assign('menus', $menus);
+        $menu_id = cookie('show_menu_id');
+        if ($this->iframe != 1) {
+            $crumb = Menu::crumbMenu($menu_id);
+            $this->assign('crumb', $crumb);
+        }
     }
 
     private function initAuth()
     {
         if ($this->checkLogin) {
             $this->checkLogin();
+        }
+        $url = app('http')->getName() . "/" . $this->request->controller(true) . "/" . $this->request->action(true);
+        $currentMenu = Menu::getCurrentMenu($url);
+        if ($this->checkAuth) {
+            if (!$currentMenu) {
+                $this->error('节点不存在');
+            }
+            if ($currentMenu['is_auth'] == 1) {
+                Role::checkAuth($this->user, $currentMenu['id']);
+            }
         }
     }
 
@@ -111,6 +131,9 @@ class ConsoleBase extends BaseController
         if (false === $this->user) {
             $this->redirect(url('login/index')->domain(true)->build());
         }
+        $this->assign('user', $this->user);
+        define('ADMIN_ID', $this->user->id);
+
     }
 
     /**
@@ -240,6 +263,7 @@ class ConsoleBase extends BaseController
 
     private function openIframe()
     {
+
         if ($this->request->controller(true) == "index" && $this->request->action(true) == "index") {
             $redirect_url = $this->request->param('redirect_url', '');
             if ($redirect_url) {

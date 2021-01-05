@@ -21,7 +21,14 @@
                 {'type': "checkbox"},
                 {'field': "id", 'title': "编号", width: 60, edit: true},
                 {'field': "name", 'title': "菜单名称", "search": true},
-                {'field': "auth", 'title': "权限", templet:"<div><span style='cursor: pointer;color: #1E9FFF' onclick=layerOpen('{:url("permission")}',{id:'{{d.id}}'},'权限设置')>设置</span></div>"},
+                {
+                    'field': "auth", 'title': "权限", templet: function (d) {
+                        if (d.id == 1) {
+                            return "全部权限"
+                        }
+                        return "<div><span style='cursor: pointer;color: #1E9FFF' onclick=layerOpen('{:url(\"permission\")}',{id:'{{d.id}}'},'权限设置')>设置</span></div>";
+                    }
+                },
                 {
                     'field': "status",
                     'title': "状态",
@@ -39,4 +46,18 @@
         })
     })
 
+    function del(id) {
+        if (id == 1) {
+            layer.msg('禁止删除超级管理员角色')
+            return
+        }
+        $.post("{:url('del')}", {
+            id: id
+        }, function (res) {
+            layer.msg(res.msg)
+            if (res.code == 0) {
+                layui.ml.tableInstance.reload()
+            }
+        })
+    }
 </script>

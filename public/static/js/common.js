@@ -6,35 +6,46 @@ layui.use(['element', 'jquery', 'form'], function () {
     // 渲染菜单
     if (typeof menus !== "undefined") {
         // 监听导航点击
+
         element.on('nav(mySlide)', function (elem) {
             var data = elem.data()
             if (!data.href) {
                 return false;
             }
-            var href = setUrlParams(data.href || "");
-
+            setCookie('show_menu_id', data.id);
             var title = data.title || elem.text();
-            var id = hex_md5(href);
-            var dom = $(".layui-tab-title li[lay-id='" + id + "']");
-            if (dom.length) {
+            if (iframe == 1) {
+                var href = setUrlParams(data.href, {iframe: 1});
+                var id = hex_md5(href);
+                var dom = $(".layui-tab-title li[lay-id='" + id + "']");
+                if (dom.length) {
+                    element.tabChange("myIframe", id)
+                    $("#" + id)[0].contentWindow.location.reload(true);
+                    return
+                }
+                element.tabAdd("myIframe", {
+                    title: title,
+                    content: "<iframe id='" + id + "' class=\"iframe\" src=" + href + " frameborder=\"0\"></iframe>",
+                    id: id
+                });
                 element.tabChange("myIframe", id)
-                $("#" + id)[0].contentWindow.location.reload(true);
-                return
+            } else {
+                window.location.href = setUrlParams(data.href)
             }
-            element.tabAdd("myIframe", {
-                title: title,
-                content: "<iframe id='" + id + "' class=\"iframe\" src=" + href + " frameborder=\"0\"></iframe>",
-                id: id
-            });
-            element.tabChange("myIframe", id)
         });
         element.on('nav(myModule)', function (elem) {
             var data = elem.data()
             var index = data.index;
-            renderMenus(menus[index] ? menus[index].menu : [])
+            setCookie('show_module_id', menus[index].id);
+            renderMenus(menus[index] ? menus[index].child : [])
         });
         renderModules(menus);
-        renderMenus(menus[0] ? menus[0].menu : [])
+        if (iframe == 0) {
+            cacheMenu();
+        }else{
+            $("#myModule>li").eq(0).addClass('layui-this')
+            renderMenus(menus[0] ? menus[0].child : [])
+        }
     }
     form.on("switch(changeSwitch)", function (obj) {
         var url = $(this).data('url')
@@ -105,6 +116,72 @@ layui.use(['element', 'jquery', 'form'], function () {
     })
 })
 
+function cacheMenu() {
+    var module_id = getCookie('show_module_id');
+    for (var key in menus) {
+        if (menus.hasOwnProperty(key)) {
+            if (menus[key].id == module_id) {
+                $("#myModule>li").eq(key).addClass('layui-this')
+                renderMenus(menus[key].child || [])
+                var child = menus[key].child;
+                return activeMenus(child)
+            }
+        }
+    }
+    $("#myModule>li").eq(0).addClass('layui-this')
+    renderMenus(menus[0] ? menus[0].child : [])
+}
+
+function activeMenus(child) {
+    var menu_id = getCookie('show_menu_id');
+    var menu_ids = [];
+    for (var key in child) {
+        if (child.hasOwnProperty(key)) {
+            if (child[key].id == menu_id) {
+                menu_ids.push(key);
+            } else {
+                if (child[key].child && child[key].child.length > 0) {
+                    var res = activeMenus(child.child)
+                    if (res.length > 0) {
+                        menu_ids.push(key);
+                        menu_ids = menu_ids.concat(res)
+                    }
+                }
+            }
+        }
+    }
+    for (var index in menu_ids) {
+        $("#mySlide>li").eq(menu_ids[index]).addClass('layui-this')
+    }
+}
+
+function setCookie(cname, cvalue, exdays) {
+    document.cookie = cname + "=" + cvalue + "; path=/ ";
+}
+
+function getCookie(cname) {
+    var name = cname + "=";
+    var ca = document.cookie.split(';');
+    for (var i = 0; i < ca.length; i++) {
+        var c = ca[i].trim();
+        if (c.indexOf(name) == 0) {
+            return c.substring(name.length, c.length);
+        }
+    }
+    return "";
+}
+
+function del(id) {
+    $.post("{:url('del')}", {
+        id: id
+    }, function (res) {
+        layer.msg(res.msg)
+        if (res.code == 0) {
+            layui.ml.tableInstance.reload()
+        }
+    })
+}
+
 function formVal(filter, data) {
     layui.use(['form', 'jquery'], function () {
         var $ = layui.jquery;
@@ -147,6 +224,8 @@ function formVal(filter, data) {
 }
 
 function layerOpen(url, params, title) {
+    params = params || {};
+    params['iframe'] = 1;
     if (typeof url == "object") {
         layer.open(url)
     } else {
@@ -169,7 +248,7 @@ function back() {
 }
 
 function setUrlParams(url, param) {
-    var params = ["iframe=" + iframe];
+    var params = [];
     for (var key in param) {
         if (param.hasOwnProperty(key)) {
             params.push(key + '=' + param[key])
@@ -177,9 +256,9 @@ function setUrlParams(url, param) {
     }
     params = params.join('&');
     if (url.indexOf("?") !== -1) {
-        url += "&" + params;
+        url += params ? ("&" + params) : '';
     } else {
-        url += "?" + params;
+        url += params ? ("?" + params) : '';
     }
 
     return url;
@@ -201,28 +280,28 @@ function renderMenus(menus, is_child) {
         if (is_child) {
             html += '<dl class="layui-nav-child">';
             if (this.target === '_blank') {
-                html += '<dd><a target="_blank" href="' + this.url + '">' + this.name + '</a></dd>'
+                html += '<dd><a target="_blank" data-id="' + this.id + '" href="' + this.url + '">' + this.name + '</a></dd>'
             } else {
 
                 if (layui.$.isArray(this.child) && this.child.length > 0) {
                     html += '<dd><a href="javascript:void(0);" >' + this.name + '</a>';
                     html += renderMenus(this.child, true);
                 } else {
-                    html += '<dd><a href="javascript:void(0);" data-href="' + this.url + '">' + this.name + '</a>';
+                    html += '<dd><a href="javascript:void(0);" data-id="' + this.id + '" data-href="' + this.url + '">' + this.name + '</a>';
                 }
             }
             html += '</dd></dl>';
         } else {
             html += '<li class="layui-nav-item layui-nav-itemed">';
             if (this.target === '_blank') {
-                html += '<a target="_blank" href="' + this.url + '">' + this.name + '</a>'
+                html += '<a target="_blank" data-id="' + this.id + '" href="' + this.url + '">' + this.name + '</a>'
             } else {
 
                 if (layui.$.isArray(this.child) && this.child.length > 0) {
                     html += '<a href = "javascript:;" > ' + this.name + ' </a>';
                     html += renderMenus(this.child, true);
                 } else {
-                    html += '<a data-href="' + this.url + '" href = "javascript:;" > ' + this.name + ' </a>';
+                    html += '<a data-id="' + this.id + '" data-href="' + this.url + '" href = "javascript:;" > ' + this.name + ' </a>';
                 }
             }
             html += '</li>';

@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>超炫酷的html登录界面带CSS3动画特效 - 代码库</title>
+    <title>登录</title>
     <link rel="stylesheet" type="text/css" href="/static/login/css/default.css">
     <!--必要样式-->
     <link rel="stylesheet" type="text/css" href="/static/login/css/styles.css">
@@ -37,6 +37,15 @@
                 <img src='/static/login/images/tick.png'>
             </div>
         </div>
+        <div class='login_fields__captcha' style="{$login_fail<$login_fail_number?'display: none':''}">
+            <div class='icon'>
+                <img src='/static/login/images/key.png'>
+            </div>
+            <input placeholder='验证码' autocomplete="off" name="captcha" type='text'/>
+            <div class='captcha'>
+                <img src='{:captcha_src()}'>
+            </div>
+        </div>
         <div class='login_fields__submit'>
             <input type='button' value='登录'>
             <div class='forgot'>
@@ -49,7 +58,8 @@
         <p>欢迎回来</p>
     </div>
     <div class='disclaimer'>
-        <p>简介</p>
+        <p>欢迎登录本系统</p>
+        <p>体验账户：admin 123456</p>
     </div>
 </div>
 <div class='authent'>
@@ -72,24 +82,28 @@
                 if (res.code === 0) {
                     setTimeout(function () {
                         success()
-                    }, 1000)
+                    }, 500)
+                } else if (res.code == 2) {
+                    $(".captcha img").trigger('click')
+                    setTimeout(function () {
+                        $(".login_fields__password").fadeIn(123)
+                        fail(res.msg)
+                    }, 500)
                 } else {
                     setTimeout(function () {
                         fail(res.msg)
-                    }, 1000)
+                    }, 500)
                 }
             }, error: function () {
                 fail('网络请求失败')
             }
         })
     });
-    $('input[type="text"],input[type="password"]').focus(function () {
+    $('input[name="username"],input[name="password"]').focus(function () {
         $(this).prev().animate({'opacity': '1'}, 200);
-    });
-    $('input[type="text"],input[type="password"]').blur(function () {
+    }).blur(function () {
         $(this).prev().animate({'opacity': '.5'}, 200);
-    });
-    $('input[type="text"],input[type="password"]').keyup(function () {
+    }).keyup(function () {
         if (!$(this).val() == '') {
             $(this).next().animate({
                 'opacity': '1',
@@ -109,30 +123,42 @@
         });
     });
 
-    function success() {
+    $(".captcha img").click(function () {
+        $(this).attr('src',"{:captcha_src()}")
+    })
+
+    function success(text, time) {
         hideLoading();
+        time = time || 3
+        var login = $('.login>div.login_title,.login>div.disclaimer,.login>form');
         $('.login').removeClass('test');
-        $('.login div').fadeOut(123);
-        $(".success h2").text('认证成功')
-        $(".success p").text('1秒后跳转')
+        login.fadeOut(123);
+        $(".success h2").text(text || '认证成功')
+        $(".success p").html(time + '秒后跳转,'+'<a href="{:url("console/index/index")}" >立即跳转</a>')
         setTimeout(function () {
             $('.success').fadeIn();
         }, 123);
         setTimeout(function () {
             window.location.href = "{:url('console/index/index')}"
-        }, 1000)
+        }, time * 1000)
     }
 
-    function fail(msg) {
+    function fail(msg, time) {
         hideLoading();
+        time = time || 3
+        var login = $('.login>div.login_title,.login>div.disclaimer,.login>form');
         $('.login').removeClass('test');
-        $('.login div').fadeOut(123);
+        login.fadeOut(123);
         $(".success h2").text('认证失败')
         $(".success p").text(msg)
         setTimeout(function () {
             $('.success').fadeIn();
         }, 123);
-
+        setTimeout(function () {
+            $('.success').hide();
+            $('.authent').hide();
+            login.fadeIn();
+        }, time * 1000);
     }
 
     function showLoading() {

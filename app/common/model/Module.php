@@ -28,19 +28,21 @@ class Module extends Model
     /**
      * 获取所有模块所有菜单
      *
+     * @param null $user
+     *
      * @return \think\Collection
      */
-    public static function allMenu(): \think\Collection
+    public static function allMenu($user = null): \think\Collection
     {
-        if (!Cache::has('all_menu') || env('APP_DEBUG')) {
-            $all = self::all();
-            $all->each(function ($item) {
-                $menu = Menu::getMenuByModuleId($item->id);
-                $item->setAttr('menu', $menu);
-            });
-            Cache::set('all_menu', $all);
-            return $all;
+        if (!$user) {
+            return new \think\Collection();
         }
-        return Cache::get('all_menu');
+        // 如果是管理员或者是超管权限
+        if ($user->id == 1 || array_search('1', $user->role_id) !== false) {
+            return Menu::allMenu();
+        } else {
+            $checked = Role::getCheckMenuId($user->role_id, $user->menu_id);
+            return Menu::listByIds($checked);
+        }
     }
 }

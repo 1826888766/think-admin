@@ -23,8 +23,22 @@
                 {'field': "nickname", 'title': "昵称", "search": true},
                 {'field': "mobile", 'title': "手机号", "search": true},
                 {'field': "username", 'title': "登录名", "search": true},
-                {'field': "role", 'title': "角色", templet:"<div><span style='cursor: pointer;color: #1E9FFF' onclick=layerOpen('{:url("role")}',{id:'{{d.id}}'},'权限设置')>设置</span></div>"},
-                {'field': "auth", 'title': "权限", templet:"<div><span style='cursor: pointer;color: #1E9FFF' onclick=layerOpen('{:url("permission")}',{id:'{{d.id}}'},'权限设置')>设置</span></div>"},
+                {
+                    'field': "role", 'title': "角色", templet: function (d) {
+                        if (d.id == 1) {
+                            return "超级管理员"
+                        }
+                        return "<div><span style='cursor: pointer;color: #1E9FFF' onclick=layerOpen('{:url(\"role\")}',{id:'{{d.id}}'},'权限设置')>设置</span></div>"
+                    }
+                },
+                {
+                    'field': "auth", 'title': "权限", templet: function (d) {
+                        if (d.id==1 || d.role_id.indexOf('1') != -1) {
+                            return "全部权限"
+                        }
+                        return "<div><span style='cursor: pointer;color: #1E9FFF' onclick=layerOpen('{:url(\"permission\")}',{id:'{{d.id}}'},'权限设置')>设置</span></div>";
+                    }
+                },
                 {'field': "create_time", 'title': "创建时间"},
                 {'field': "last_login_ip", 'title': "登录ip"},
                 {'field': "last_login_time", 'title': "登录时间"},
@@ -45,5 +59,20 @@
             ]]
         })
     })
+
+    function del(id) {
+        if (id == 1){
+            layer.msg('禁止删除超级管理员')
+            return
+        }
+        $.post("{:url('del')}", {
+            id: id
+        }, function (res) {
+            layer.msg(res.msg)
+            if (res.code == 0) {
+                layui.ml.tableInstance.reload()
+            }
+        })
+    }
 
 </script>
