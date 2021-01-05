@@ -85,11 +85,17 @@ class User extends Model
 
     public function setMenuIdAttr($value): string
     {
+        if (!$value) {
+            return $value;
+        }
         return serialize($value);
     }
 
     public function getMenuIdAttr($value)
     {
+        if (!$value) {
+            return $value;
+        }
         return unserialize($value);
     }
 
