@@ -54,10 +54,7 @@ class ConsoleBase extends BaseController
     {
         $this->initAuth();
         // 判断是否为iframe子页面
-        $is_iframe = $this->request->param('iframe', 0);
-        if ($is_iframe == 1) {
-            $this->layout = 'iframe';
-        }
+
         if (!$this->request->isAjax()) {
             $this->initView();
             $this->initMenu();
@@ -80,6 +77,10 @@ class ConsoleBase extends BaseController
      */
     private function initView()
     {
+        $is_iframe = $this->request->param('iframe', 0);
+        if ($is_iframe == 1) {
+            $this->layout = 'iframe';
+        }
         $this->view->layout($this->layout);
         // 如果是layout布局并且不是iframe子窗口
         if ($this->iframe == 1 && $this->layout == "layout") {
@@ -105,6 +106,9 @@ class ConsoleBase extends BaseController
         }
     }
 
+    /**
+     * 初始化权限
+     */
     private function initAuth()
     {
         if ($this->checkLogin) {
