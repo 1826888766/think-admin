@@ -68,6 +68,7 @@ class User extends Model
         }
         $_user->last_login_ip = request()->ip();
         $_user->last_login_time = time();
+        $_user->password_fail = 0;
         $_user->save();
         session('login_token', $_user);
         return true;

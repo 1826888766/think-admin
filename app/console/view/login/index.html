@@ -48,9 +48,6 @@
         </div>
         <div class='login_fields__submit'>
             <input type='button' value='登录'>
-            <div class='forgot'>
-                <a href='#'>忘记密码?</a>
-            </div>
         </div>
     </form>
     <div class='success'>
@@ -124,7 +121,7 @@
     });
 
     $(".captcha img").click(function () {
-        $(this).attr('src',"{:captcha_src()}")
+        $(this).attr('src', "{:captcha_src()}?v=" + Date.now())
     })
 
     function success(text, time) {
@@ -134,7 +131,7 @@
         $('.login').removeClass('test');
         login.fadeOut(123);
         $(".success h2").text(text || '认证成功')
-        $(".success p").html(time + '秒后跳转,'+'<a href="{:url("console/index/index")}" >立即跳转</a>')
+        $(".success p").html(time + '秒后跳转,' + '<a href="{:url("console/index/index")}" >立即跳转</a>')
         setTimeout(function () {
             $('.success').fadeIn();
         }, 123);
