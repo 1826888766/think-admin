@@ -4,10 +4,10 @@
 /**
  * 生成查询条件
  *
- * @param array    $params   需要生成的数组
- * @param mixed    $create   需要搜索的时间字段|或闭包函数
+ * @param array $params 需要生成的数组
+ * @param mixed $create 需要搜索的时间字段|或闭包函数
  * @param string[] $haystack 不需要加入生成的字段|或闭包函数
- * @param Closure  $callback function(&$where,$key,$value):mixed  一些需要自定义的是一个闭包函数
+ * @param Closure $callback function(&$where,$key,$value):mixed  一些需要自定义的是一个闭包函数
  *
  *
  * @return array
@@ -96,13 +96,12 @@ function startsWith($string, $subString): bool
 
 /**
  * 生成form表单
- *
  * @param array $item
  * @param bool  $is_child 是否为一行内的数据
  *
  * @return string
  * @author 马良 <1826888766@qq.com>
- * @date   2020-12-04
+ * @date 2020-12-04
  */
 function createFormItemHtml($item, $is_child = false)
 {
@@ -206,14 +205,13 @@ function createFormItemHtml($item, $is_child = false)
 
 /**
  * 富文本编辑器
- *
- * @param array  $obj
+ * @param array $obj
  * @param string $name
  * @param string $url
  *
  * @return string
  * @author 马良 <1826888766@qq.com>
- * @date   2020-12-04
+ * @date 2020-12-04
  */
 function editor($obj = [], $name = 'ueditor', $url = '')
 {
@@ -288,13 +286,11 @@ function createFormHtml($config, $is_child = false)
 
 /**
  * 获取数组中的某一项
- *
- * @param  [type] $obj
- * @param  [type] $field
+ * @param [type] $obj
+ * @param [type] $field
  * @param string $default
- *
  * @author 马良 <1826888766@qq.com>
- * @date   2020-12-03
+ * @date 2020-12-03
  */
 function getField($obj, $field, $default = '')
 {
@@ -303,12 +299,10 @@ function getField($obj, $field, $default = '')
 
 /**
  * 解析数值
- *
- * @param  [type] $value
- *
+ * @param [type] $value
  * @return void
  * @author 马良 <1826888766@qq.com>
- * @date   2020-12-03
+ * @date 2020-12-03
  */
 function decodeValueString($value)
 {
@@ -329,4 +323,10 @@ function decodeValueString($value)
         }
     }
     return $value;
+}
+
+function createId($name, $type = 1, $length = 6)
+{
+    $name .= \think\helper\Str::random($length, $type);
+    return $name;
 }
