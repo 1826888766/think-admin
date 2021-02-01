@@ -61,7 +61,7 @@ class Role extends ModelBase
      * @throws \think\db\exception\DbException
      * @throws \think\db\exception\ModelNotFoundException
      */
-    public static function getCheckMenuId(array $id, array $menu_diff = []): array
+    public static function getCheckMenuId($id, $menu_diff = []): array
     {
         $role = self::where(['id' => $id])->find();
         $checked = [];
