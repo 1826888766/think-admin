@@ -25,21 +25,27 @@ class Log extends ConsoleBase
         return $this->fetch();
     }
 
-    public function disable(): \think\response\Json
+    public function disable()
     {
         $id = $this->param['id'];
         $log = LogModel::where(['id' => $id])->find();
         if (!$log) {
-            return Response::fail(1,'禁用失败');
+            return Response::fail(1, '禁用失败');
         }
-        if (BlackIp::where(['ip' => $log->request_ip])->find()) {
-            return Response::fail(1,'重复禁用');
+        if ($ip = BlackIp::where(['ip' => $log->request_ip])->find()) {
+            if ($ip->status == 1) {
+                return Response::fail(1, '重复禁用');
+            } else {
+                $ip->status = 1;
+                $ip->save();
+                return Response::success('禁用成功');
+            }
         }
         $data = BlackIp::create(['ip' => $log->request_ip]);
         if ($data) {
             return Response::success('禁用成功');
         }
-        return Response::fail(1,'禁用失败');
+        return Response::fail(1, '禁用失败');
     }
 
     public function clear()
