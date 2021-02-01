@@ -141,8 +141,9 @@
         table.render(config)
     })
 
-    function add(id,params) {
+    function add(id, params) {
         var url = '{:url("add")}'
+        params = params || {}
         if (id) {
             params['id'] = id;
         }
@@ -155,7 +156,8 @@
     function edit(id) {
         var url = '{:url("edit")}'
         var params = {
-            id: id
+            id: id,
+            module_id: $('.layui-tab-title .layui-this').attr('lay-id')
         }
         layerOpen(url, params)
     }

@@ -23,7 +23,6 @@ class Module extends ConsoleBase
     /**
      * 菜单管理
      *
-     * @return string
      */
     public function index()
     {

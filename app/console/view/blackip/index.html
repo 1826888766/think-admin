@@ -1,12 +1,17 @@
 <div class="layui-card">
     <div class="layui-card-body">
+        <blockquote class="layui-elem-quote">注意：当黑白名单同时存在时，优先白名单，并且不会再检查黑名单</blockquote>
+
         <div class="layui-form layui-form-pane" id="mySearch"></div>
         <div class="layui-btn-group">
-            {ta:btn url='/console/log/clear' theme='warm'}清空{/ta:btn}
+
+            {ta:btn url="/console/blackip/add" ajax="false" confirm="" iframe="1" theme="normal"}添加{/ta:btn}
         </div>
         <table class="layui-table" lay-filter="myTable" id="myTable"></table>
     </div>
+
 </div>
+
 <script>
     var $;
     layui.use(['table', 'form', "ml", "jquery"], function () {
@@ -21,36 +26,19 @@
                 {
                     'field': "type", 'title': "日志类型", width: 120, "search": true, type: "select", options: [
                         {value: "", name: "全部"},
-                        {value: 1, name: "系统日志"},
-                        {value: 2, name: "请求日志"},
-                        {value: 3, name: "接口日志"},
+                        {value: 1, name: "黑名单"},
+                        {value: 2, name: "白名单"},
                     ]
                 },
-                {'field': "note", 'title': "备注"},
-                {'field': "url", 'title': "请求地址"},
-                {'field': "param", 'title': "请求参数"},
-                {'field': "request_ip", 'title': "最后请求ip", width: 140, "search": true},
-                {'field': "count", 'title': "请求次数", width: 100},
+                {'field': "status", 'title': "状态", width: 140, search: true, type: "switch", text: "禁用|正常",url:"/console/blackip/status"},
+                {'field': "count", 'title': "拦截次数", width: 100},
                 {'field': "create_time", 'title': "最后请求时间", width: 150},
                 {'field': "update_time", 'title': "最后请求时间", width: 150, type: "date", range: true, "search": true},
                 {
                     'field': "field", 'title': "操作", width: 100, btns: [
-                        {title: "禁用ip", click: "disabled('{{d.id}}')",}]
+                        {title: "删除",class:"layui-btn-danger", click: "del('{{d.id}}')",}]
                 }
             ]]
         })
     })
-
-    function disabled(id) {
-        layer.confirm('确认禁用此请求的ip吗？', function () {
-            $.post("{:url('disable')}", {
-                id: id
-            }, function (res) {
-                layer.msg(res.msg)
-                if (res.code == 0) {
-                    layui.ml.tableInstance.reload()
-                }
-            })
-        })
-    }
 </script>

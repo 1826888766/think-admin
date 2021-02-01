@@ -13,13 +13,15 @@ class Ta extends TagLib
      */
     protected $tags = [
         // 标签定义： attr 属性列表 close 是否闭合（0 或者1 默认1） alias 标签别名 level 嵌套层次
-        'button' => ['attr' => 'id,type,class,url,ajax,size,confirm,reload,iframe', 'close' => 1], //闭合标签，默认为不闭合
+        'button' => ['attr' => 'id,type,class,url,ajax,size,confirm,reload,iframe', 'alias' => "btn", 'close' => 1], //闭合标签，默认为不闭合
     ];
 
     /**
      * 按钮支持异步提交
-     * @param array $tag
+     *
+     * @param array  $tag
      * @param string $content
+     *
      * @return string
      */
     public function tagButton(array $tag, string $content): string
@@ -32,11 +34,11 @@ class Ta extends TagLib
         $content = "<button id='{$id}' type='$type' class='$class' >{$content}</button>";
         $url = $tag['url'] ?? '';
         if ($url) {
-            $confirm = $tag['confirm'] ?? '';
-            $iframe = isset($tag['iframe']);
-            $reload = isset($tag['reload']);
-            $ajax = isset($tag['ajax']);
-            if ($ajax) {
+            $confirm = $tag['confirm'] ?? '确认执行当前操作吗？';
+            $iframe = $tag['iframe'] ?? false;
+            $reload = $tag['reload'] ?? true;
+            $ajax = $tag['ajax'] ?? true;
+            if ($ajax && $ajax !== "false" && $ajax !== 0 && $ajax !== "0") {
                 $content .= $this->parseAjax($id, $url, $confirm, $reload);
             } else {
                 $content .= $this->parseJump($id, $url, $confirm, $iframe);
@@ -47,7 +49,7 @@ class Ta extends TagLib
 
     public function parseAjax($id, $url, $confirm = "", $reload = false): string
     {
-        if ($reload) {
+        if ($reload && $reload !== "false" && $reload !== 0 && $reload !== "0" ) {
             $reload = "location.reload()";
         } else {
             $reload = "";
@@ -94,14 +96,14 @@ class Ta extends TagLib
             layer.confirm('{$confirm}',{
                 title:'提示'
             },function() {
-               if ($iframe) {
+               if ('{$iframe}' == true) {
                 layerOpen('{$url}')
             } else {
                location.href = '{$url}'
             }
             })
         }else{
-             if ($iframe) {
+             if ('{$iframe}' == true) {
                 layerOpen('{$url}')
             } else {
                location.href = '{$url}'

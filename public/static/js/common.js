@@ -182,7 +182,7 @@ function getCookie(cname) {
 }
 
 function del(id) {
-    $.post("{:url('del')}", {
+    $.post("del", {
         id: id
     }, function (res) {
         layer.msg(res.msg)
