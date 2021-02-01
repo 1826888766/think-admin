@@ -30,12 +30,12 @@ class User extends Model
         return self::where($where)->append(['roles'])->order('id desc')->paginate($limit);
     }
 
-    public static function onAfterInsert(Model $model): void
+    public static function onBeforeInsert(Model $model): void
     {
         $model->password = create_password($model->password);
     }
 
-    public static function onAfterUpdate(Model $model): void
+    public static function onBeforeUpdate(Model $model): void
     {
         if ($model->password) {
             $model->password = create_password($model->password);

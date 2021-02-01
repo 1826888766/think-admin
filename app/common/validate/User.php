@@ -34,4 +34,8 @@ class User extends Validate
     {
         return $this->remove('id','require')->remove('password','require');
     }
+    public function sceneInfo()
+    {
+        return $this->remove('role_id','require');
+    }
 }

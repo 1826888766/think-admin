@@ -109,8 +109,10 @@ layui.use(['element', 'jquery', 'form'], function () {
                     parent.layer.closeAll()
                     if (typeof parent.layui.ml != "undefined") {
                         parent.layui.ml.tableInstance.reload()
-                    } else {
+                    } else if(typeof parent.tableInstance!="undefined") {
                         parent.tableInstance.reload()
+                    }else{
+                        parent.location.reload()
                     }
                 }
                 timeout()
