@@ -14,6 +14,7 @@ class Log extends ModelBase
             1 => "系统日志",
             2 => "请求日志",
             3 => "接口日志",
+            4 => "登录日志",
         ];
         return $a[$value];
     }

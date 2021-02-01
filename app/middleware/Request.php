@@ -46,6 +46,9 @@ class Request
                 break;
             case 'console':
                 $type = 1;
+                if ($request->controller() == "Login") {
+                    $type = 4;
+                }
                 break;
             default:
                 if ($request->isAjax()) {
