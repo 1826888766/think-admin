@@ -34,14 +34,15 @@ class Ta extends TagLib
         $content = "<button id='{$id}' type='$type' class='$class' >{$content}</button>";
         $url = $tag['url'] ?? '';
         if ($url) {
-            $confirm = $tag['confirm'] ?? '确认执行当前操作吗？';
             $iframe = $tag['iframe'] ?? false;
             $reload = $tag['reload'] ?? true;
             $ajax = $tag['ajax'] ?? true;
-            if ($ajax && $ajax !== "false" && $ajax !== 0 && $ajax !== "0") {
-                $content .= $this->parseAjax($id, $url, $confirm, $reload);
-            } else {
+            if ($iframe) {
+                $confirm = $tag['confirm'] ?? '';
                 $content .= $this->parseJump($id, $url, $confirm, $iframe);
+            } else if ($ajax) {
+                $confirm = $tag['confirm'] ?? '确认执行当前操作吗？';
+                $content .= $this->parseAjax($id, $url, $confirm, $reload);
             }
         }
         return $content;
@@ -49,7 +50,7 @@ class Ta extends TagLib
 
     public function parseAjax($id, $url, $confirm = "", $reload = false): string
     {
-        if ($reload && $reload !== "false" && $reload !== 0 && $reload !== "0" ) {
+        if ($reload && $reload !== "false" && $reload !== 0 && $reload !== "0") {
             $reload = "location.reload()";
         } else {
             $reload = "";

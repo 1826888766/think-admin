@@ -48,7 +48,7 @@ abstract class BaseController
     {
         $this->app     = $app;
         $this->request = $this->app->request;
-        $this->view = View::instance();
+        $this->view =  View::instance();
 
         // 控制器初始化
         $this->initialize();

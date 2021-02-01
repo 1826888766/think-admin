@@ -1,11 +1,9 @@
 <div class="layui-card">
     <div class="layui-card-body">
         <blockquote class="layui-elem-quote">注意：当黑白名单同时存在时，优先白名单，并且不会再检查黑名单</blockquote>
-
         <div class="layui-form layui-form-pane" id="mySearch"></div>
         <div class="layui-btn-group">
-
-            {ta:btn url="/console/blackip/add" ajax="false" confirm="" iframe="1" theme="normal"}添加{/ta:btn}
+            {ta:btn url="/console/blackip/add" iframe="1" theme="normal"}添加{/ta:btn}
         </div>
         <table class="layui-table" lay-filter="myTable" id="myTable"></table>
     </div>

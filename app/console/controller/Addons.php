@@ -44,8 +44,11 @@ class Addons extends ConsoleBase
             $configs = glob(app()->getRootPath() . "addons/*/config.php");
             $addons = [];
             foreach ($configs as $file) {
-                $config = include $file;
+                $temp_arr = include $file;
                 $config['path'] = str_replace('/config.php', '', $file);
+                foreach ($temp_arr as $key => $value) {
+                    $config[$key] = $value['data'];
+                }
                 $addons[] = $config;
             }
             Cache::set('addonsConfig', $addons);
@@ -67,6 +70,17 @@ class Addons extends ConsoleBase
             return Response::success([], '安装成功');
         }
         return Response::fail(1, '安装失败');
+    }
+
+    public function setting($id)
+    {
+        $addons = $this->searchAddons($id);
+        if (!$addons) {
+            return Response::fail(1, '插件不存在');
+        }
+        $name = $addons['id'];
+        $class = "\\addons\\$name\\Plugin";
+        return (new $class($this->app))->setting();
     }
 
     private function searchAddons($id)
@@ -91,8 +105,29 @@ class Addons extends ConsoleBase
         return Response::fail(1, '卸载失败');
     }
 
-    public function del()
+    public function del($id)
     {
+        $addons = $this->searchAddons($id);
+        if (!$addons) {
+            return Response::fail(1, '插件不存在');
+        }
+        $dir = app()->getRootPath() . "addons/$id/";
+        $this->clear($dir,true);
+        return Response::success('删除成功');
+    }
 
+    protected function clear(string $path,$rmdir): void
+    {
+        $files = is_dir($path) ? scandir($path) : [];
+        foreach ($files as $file) {
+            if ('.' != $file && '..' != $file && is_dir($path . $file)) {
+                $this->clear($path . $file . DIRECTORY_SEPARATOR,$rmdir);
+                if ($rmdir) {
+                    @rmdir($path . $file);
+                }
+            } elseif ('.gitignore' != $file && is_file($path . $file)) {
+                unlink($path . $file);
+            }
+        }
     }
 }

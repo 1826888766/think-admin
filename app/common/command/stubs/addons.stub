@@ -1,0 +1,25 @@
+<?php
+declare (strict_types = 1);
+
+namespace {%namespace%};
+
+use app\common\controller\AddonsBase;
+
+/**
+ * {%className%}
+ **/
+class Plugin extends AddonsBase
+{
+
+    // 初始化
+    protected function initialize()
+    {
+        // TODO 初始化操作
+    }
+
+    //安装插件方法
+    public function install(){}
+
+    //卸载插件方法
+    public function uninstall(){}
+}

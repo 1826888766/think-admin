@@ -128,8 +128,8 @@ function createFormItemHtml($item, $is_child = false)
             break;
         case 'switch':
             $html .= '<div class="layui-input-block">';
-            $html .= "<input type=checkbox lay-filter='mlFilterSwitch' name={$item['field']} lay-text=" . getField($item, 'text') . "
-                        value={$__ORIGIN_VALUE} lay-skin=switch>";
+            $html .= "<input type=checkbox lay-filter='mlFilterSwitch' name={$item['field']} lay-text='" . getField($item, 'text') . "' 
+                        value='{$__ORIGIN_VALUE}' lay-skin=switch>";
             $html .= '</div>';
             break;
         case 'checkbox':
@@ -188,7 +188,7 @@ function createFormItemHtml($item, $is_child = false)
             break;
         default:
             $html .= '<div class="layui-input-inline">';
-            $html .= " <input  autocomplete=off type={$item['type']} name={$item['field']} placeholder=" . getField($item, 'placeholder', "请输入{$item['label']}") . "
+            $html .= " <input  autocomplete=off type={$item['type']} name={$item['field']} placeholder=" . getField($item, 'placeholder', "请输入{$item['label']}") ." ". getField($item, 'readonly', "") ." ". getField($item, 'disabled', "") . "
         class=layui-input>";
             $html .= '</div>';
             break;

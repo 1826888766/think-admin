@@ -39,12 +39,21 @@
             ]],
         })
     })
-
+    function setting(id) {
+        layerOpen('{:url("setting")}',{id:id})
+    }
     function install(id) {
         var index = layer.load()
         $.post('{:url("install")}',{id:id},function (res) {
-
             layer.close(index)
+            layui.ml.tableInstance.reload()
+        })
+    }
+    function uninstall(id) {
+        var index = layer.load()
+        $.post('{:url("uninstall")}',{id:id},function (res) {
+            layer.close(index)
+            layui.ml.tableInstance.reload()
         })
     }
 </script>
