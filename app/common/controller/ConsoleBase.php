@@ -175,8 +175,6 @@ class ConsoleBase extends BaseController
      * @DateTime      2020-12-29 15:45:42
      *
      * @param         [int] $id
-     *
-     * @return string||json
      */
     public function edit($id)
     {

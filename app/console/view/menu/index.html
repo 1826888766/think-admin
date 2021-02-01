@@ -44,6 +44,7 @@
 </script>
 <script>
     var $;
+    var tableInstance;
     layui.use(['treeTable', 'form', 'laytpl', "jquery", "element"], function () {
         var table = layui.treeTable;
         var form = layui.form;
@@ -109,6 +110,11 @@
                 form.render()
             },
         };
+        tableInstance = {
+            reload: function () {
+                table.render(config)
+            }
+        };
         element.on('tab(module)', function (obj) {
             config.where = {
                 module_id: $(this).attr('lay-id')
@@ -123,7 +129,7 @@
             $.post("{:url('edit')}", {
                 edit_status: 1,
                 field: "sort",
-                val:sort,
+                val: sort,
                 id: $(this).data('id')
             }, function (res) {
                 layer.msg(res.msg)
@@ -135,9 +141,8 @@
         table.render(config)
     })
 
-    function add(id) {
+    function add(id,params) {
         var url = '{:url("add")}'
-        var params = {}
         if (id) {
             params['id'] = id;
         }
@@ -152,9 +157,6 @@
         var params = {
             id: id
         }
-        if (!params.hasOwnProperty('module_id')) {
-            params['module_id'] = $('.layui-tab-title .layui-this').attr('lay-id')
-        }
         layerOpen(url, params)
     }
 
@@ -167,7 +169,7 @@
         layui.$.post(setUrlParams(url), params, function (res) {
             layer.msg(res.msg)
             if (res.code == 0) {
-                table.render()
+                tableInstance.reload()
             }
         })
     }

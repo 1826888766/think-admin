@@ -6,6 +6,8 @@
 return [
     // 应用地址
     'app_host'         => env('app.host', ''),
+    // 应用版本
+    'app_version'      => "v0.0.1",
     // 应用的命名空间
     'app_namespace'    => '',
     // 是否启用路由

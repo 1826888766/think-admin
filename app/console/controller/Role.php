@@ -21,7 +21,8 @@ class Role extends ConsoleBase
     public function index()
     {
         if ($this->request->isAjax()) {
-            $data = RoleModel::allPage();
+            $where = getSearchWhere($this->request->param());
+            $data = RoleModel::allPage($where);
             return Response::layuiSuccess($data->items(), $data->total());
         }
         return $this->fetch();

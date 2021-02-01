@@ -5,8 +5,8 @@
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
     <title>后台基础插件系统</title>
-    {load rel="stylesheet" href="/static/lib/layui/css/layui.css"}
-    {load rel="stylesheet" href="/static/css/common.css"}
+    <link rel="stylesheet" href="/static/lib/layui/css/layui.css?v={:config('app.app_version')}">
+    <link rel="stylesheet" href="/static/css/common.css?v={:config('app.app_version')}">
     {include file="template:layui" /}
 
 </head>

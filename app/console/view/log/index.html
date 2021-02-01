@@ -1,0 +1,54 @@
+<div class="layui-card">
+    <div class="layui-card-body">
+        <div class="layui-form layui-form-pane" id="mySearch"></div>
+        <div class="layui-btn-group">
+            <span class="layui-btn layui-btn-sm" onclick=layerOpen('{:url("add")}')>添加</span>
+        </div>
+        <table class="layui-table" lay-filter="myTable" id="myTable"></table>
+    </div>
+</div>
+<script>
+    var $;
+    layui.use(['table', 'form', "ml", "jquery"], function () {
+        var ml = layui.ml;
+        var table = layui.table;
+        $ = layui.jquery;
+        ml.render({
+            elem: "#myTable",
+            search_elem: "#mySearch",
+            cols: [[
+                {'field': "id", 'title': "编号", width: 60, edit: true},
+                {
+                    'field': "type", 'title': "日志类型", width: 120, "search": true, type: "select", options: [
+                        {value: 1, name: "系统日志"},
+                        {value: 2, name: "请求日志"},
+                        {value: 3, name: "接口日志"},
+                    ]
+                },
+                {'field': "note", 'title': "备注", "search": true},
+                {'field': "url", 'title': "请求地址", "search": true},
+                {'field': "param", 'title': "请求参数", "search": true},
+                {'field': "request_ip", 'title': "最后请求ip", width: 140, "search": true},
+                {'field': "count", 'title': "请求次数", width: 100, "search": true},
+                {'field': "create_time", 'title': "最后请求时间", width: 150},
+                {'field': "update_time", 'title': "最后请求时间", width: 150, type: "date", range: true, "search": true},
+                {
+                    'field': "field", 'title': "操作", width: 100, btns: [
+                        {title: "禁用ip", click: "disabled('{{d.id}})",}]
+                }
+            ]]
+        })
+    })
+
+    function disabled(id) {
+        layui.confirm()
+        $.post("{:url('disabled')}", {
+            id: id
+        }, function (res) {
+            layer.msg(res.msg)
+            if (res.code == 0) {
+                layui.ml.tableInstance.reload()
+            }
+        })
+    }
+</script>

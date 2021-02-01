@@ -12,7 +12,7 @@
  *
  * @return array
  */
-function getSearchWhere($params, $create = "create_time", $haystack = ['limit', 'page', 'keyword'], $callback = false): array
+function getSearchWhere($params, $create = "create_time", $haystack = ['limit', 'page', 'keyword', 's'], $callback = false): array
 {
     $where = [];
     // 判断是否是闭包
@@ -94,14 +94,15 @@ function startsWith($string, $subString): bool
 }
 
 
-
 /**
  * 生成form表单
- * @author 马良 <1826888766@qq.com>
- * @date 2020-12-04
+ *
  * @param array $item
- * @param bool $is_child 是否为一行内的数据
+ * @param bool  $is_child 是否为一行内的数据
+ *
  * @return string
+ * @author 马良 <1826888766@qq.com>
+ * @date   2020-12-04
  */
 function createFormItemHtml($item, $is_child = false)
 {
@@ -113,8 +114,8 @@ function createFormItemHtml($item, $is_child = false)
     if ($is_child && !in_array($item['type'], ['select'])) {
         return "";
     }
-    $html  = "";
-    if (!$is_child&&$item['type']!='hidden') {
+    $html = "";
+    if (!$is_child && $item['type'] != 'hidden') {
         $html = "<div class='layui-form-item'><label  class='layui-form-label'>{$item['label']}</label>";
     }
     switch ($item['type']) {
@@ -122,7 +123,7 @@ function createFormItemHtml($item, $is_child = false)
 
             $html .= '<div class="layui-input-block">';
             foreach ($item['value'] as $radio) {
-                $html .=  "<input type='radio' lay-filter='mlFilterRadio' title={$radio[1]} " . ($item['default'] == $radio[0] ? 'checked' : '') . " value={$radio[0]} name={$item['field']}>";
+                $html .= "<input type='radio' lay-filter='mlFilterRadio' title={$radio[1]} " . ($item['default'] == $radio[0] ? 'checked' : '') . " value={$radio[0]} name={$item['field']}>";
             }
             $html .= '</div>';
             break;
@@ -136,9 +137,9 @@ function createFormItemHtml($item, $is_child = false)
             $html .= '<div class="layui-input-block">';
             $item['default'] = is_array($item['default']) ?: explode(',', $item['default']);
             foreach ($item['value'] as $checkbox) {
-                $html .=  "<input lay-filter='mlFilterCheckbox' type='checkbox' " . (in_array($checkbox[0], $item['default']) ? 'checked' : '') . " class=layui-input
-                value={$checkbox[0]} title={$checkbox[1]} "." name='".$item['field'].
-                "' lay-skin=" . getField($item, 'skin', 'primary') . ">";
+                $html .= "<input lay-filter='mlFilterCheckbox' type='checkbox' " . (in_array($checkbox[0], $item['default']) ? 'checked' : '') . " class=layui-input
+                value={$checkbox[0]} title={$checkbox[1]} " . " name='" . $item['field'] .
+                    "' lay-skin=" . getField($item, 'skin', 'primary') . ">";
             }
             $html .= '</div>';
             break;
@@ -148,7 +149,7 @@ function createFormItemHtml($item, $is_child = false)
             }
             $html .= "<div class='layui-input-inline'><select data-ajax='" . getField($item, 'ajax', '') . "' data-to='" . getField($item, 'to', '') . "' lay-filter='mlFilterSelect' name={$item['field']}><option value=''>" . getField($item, 'placeholder', "请选择{$item['label']}") . "</option>";
             foreach ($item['value'] as $select) {
-                $html .=  "<option " . (getField($item, 'default') == $select[0] ? 'selected' : '') . " value={$select[0]}>{$select[1]}
+                $html .= "<option " . (getField($item, 'default') == $select[0] ? 'selected' : '') . " value={$select[0]}>{$select[1]}
                         </option>";
             }
             $html .= "</select></div>";
@@ -193,23 +194,26 @@ function createFormItemHtml($item, $is_child = false)
             $html .= '</div>';
             break;
     }
-    if (getField($item, 'mid')){
-        $html .="<div class='layui-form-mid text-red' >{$item['mid']}</div>";
+    if (getField($item, 'mid')) {
+        $html .= "<div class='layui-form-mid text-red' >{$item['mid']}</div>";
     }
-    if (!$is_child&&$item['type']!='hidden') {
+    if (!$is_child && $item['type'] != 'hidden') {
         $html .= "</div>";
     }
 
     return $html;
 }
+
 /**
  * 富文本编辑器
- * @author 马良 <1826888766@qq.com>
- * @date 2020-12-04
- * @param array $obj
+ *
+ * @param array  $obj
  * @param string $name
  * @param string $url
+ *
  * @return string
+ * @author 马良 <1826888766@qq.com>
+ * @date   2020-12-04
  */
 function editor($obj = [], $name = 'ueditor', $url = '')
 {
@@ -245,7 +249,7 @@ function editor($obj = [], $name = 'ueditor', $url = '')
         case 'ckeditor':
             $html = '<script src="' . $jsPath . 'ckeditor/ckeditor.js"></script>';
             $html .= '<script>';
-            foreach ($obj as  $v) {
+            foreach ($obj as $v) {
                 $html .= 'CKEDITOR.replace("' . $v . '",{filebrowserImageUploadUrl:"' . $url . '"});';
             }
             $html .= '</script>';
@@ -258,7 +262,7 @@ function editor($obj = [], $name = 'ueditor', $url = '')
             $html .= '<script src="' . $jsPath . 'umeditor/umeditor.config.js"></script>';
             $html .= '<script src="' . $jsPath . 'umeditor/umeditor.min.js"></script>';
             $html .= '<script>';
-            foreach ($obj as  $k => $v) {
+            foreach ($obj as $k => $v) {
                 $html .= 'var um' . $k . ' = UM.getEditor("' . $v . '", {
                             initialFrameWidth:"100%"
                             ,initialFrameHeight:"500"
@@ -281,24 +285,30 @@ function createFormHtml($config, $is_child = false)
 
     return join("", $html);
 }
+
 /**
  * 获取数组中的某一项
- * @author 马良 <1826888766@qq.com>
- * @date 2020-12-03
- * @param [type] $obj
- * @param [type] $field
+ *
+ * @param  [type] $obj
+ * @param  [type] $field
  * @param string $default
+ *
+ * @author 马良 <1826888766@qq.com>
+ * @date   2020-12-03
  */
 function getField($obj, $field, $default = '')
 {
     return isset($obj[$field]) ? $obj[$field] : $default;
 }
+
 /**
  * 解析数值
- * @author 马良 <1826888766@qq.com>
- * @date 2020-12-03
- * @param [type] $value
+ *
+ * @param  [type] $value
+ *
  * @return void
+ * @author 马良 <1826888766@qq.com>
+ * @date   2020-12-03
  */
 function decodeValueString($value)
 {

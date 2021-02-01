@@ -12,10 +12,22 @@ class User extends Model
 {
     protected $hidden = ['password'];
 
-    //
-    public static function allPage($limit = 10)
+    protected $type = [
+        'last_login_time' => "date"
+    ];
+
+    public function getLastLoginTimeAttr($value)
     {
-        return self::where([])->append(['roles'])->paginate($limit);
+        if ($value) {
+            return date("Y-m-d H:i:s", $value);
+        }
+        return "";
+    }
+
+    //
+    public static function allPage($where = [], $limit = 10)
+    {
+        return self::where($where)->append(['roles'])->order('id desc')->paginate($limit);
     }
 
     public static function onAfterInsert(Model $model): void
@@ -54,6 +66,9 @@ class User extends Model
             $_user->save();
             return "密码错误，次数{$password_fail},错误{$password_fail_number}次将被禁用";
         }
+        $_user->last_login_ip = request()->ip();
+        $_user->last_login_time = time();
+        $_user->save();
         session('login_token', $_user);
         return true;
     }
@@ -99,7 +114,7 @@ class User extends Model
         return unserialize($value);
     }
 
-    public function getRolesAttr()
+    public function getRolesAttr(): \think\Collection
     {
         return Role::where('id', 'in', $this->getData('role_id'))->field('id,name')->select();
     }

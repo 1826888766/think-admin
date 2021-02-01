@@ -33,7 +33,8 @@ class User extends ConsoleBase
     public function index()
     {
         if ($this->request->isAjax()) {
-            $data = UserModel::allPage();
+            $where = getSearchWhere($this->request->param());
+            $data = UserModel::allPage($where);
             return Response::layuiSuccess($data->items(), $data->total());
         }
         return $this->fetch();

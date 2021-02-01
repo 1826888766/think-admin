@@ -3,21 +3,13 @@ declare (strict_types=1);
 
 namespace app\common\model;
 
-use think\facade\Cache;
 use think\Model;
 
 /**
  * @mixin \think\Model
  */
-class Role extends Model
+class Role extends ModelBase
 {
-
-    public static function allPage($limit = 10): \think\Paginator
-    {
-        $where = [];
-        return self::where($where)->paginate($limit);
-    }
-
     public static function allAuth()
     {
         $module = Module::all();
@@ -58,7 +50,18 @@ class Role extends Model
         return $this->belongsToMany(Menu::class, RoleMenu::class, 'menu_id', 'role_id');
     }
 
-    public static function getCheckMenuId($id, $menu_diff = []): array
+    /**
+     * 获取当前角色拥有的权限
+     *
+     * @param array $id        角色id
+     * @param array $menu_diff 单独分配的权限
+     *
+     * @return array
+     * @throws \think\db\exception\DataNotFoundException
+     * @throws \think\db\exception\DbException
+     * @throws \think\db\exception\ModelNotFoundException
+     */
+    public static function getCheckMenuId(array $id, array $menu_diff = []): array
     {
         $role = self::where(['id' => $id])->find();
         $checked = [];
@@ -86,7 +89,18 @@ class Role extends Model
         return $role->roles()->attach(array_values($menu_ids));
     }
 
-    public static function checkAuth(?Model $user, $menu_id)
+    /**
+     * 检查权限
+     *
+     * @param Model|null $user    登录用户
+     * @param int        $menu_id 按钮id
+     *
+     * @return bool
+     * @throws \think\db\exception\DataNotFoundException
+     * @throws \think\db\exception\DbException
+     * @throws \think\db\exception\ModelNotFoundException
+     */
+    public static function checkAuth(?Model $user, $menu_id): bool
     {
         if (!$user) {
             return false;

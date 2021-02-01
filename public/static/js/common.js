@@ -42,11 +42,14 @@ layui.use(['element', 'jquery', 'form'], function () {
         renderModules(menus);
         if (iframe == 0) {
             cacheMenu();
-        }else{
+        } else {
             $("#myModule>li").eq(0).addClass('layui-this')
             renderMenus(menus[0] ? menus[0].child : [])
         }
     }
+    /**
+     * 监听开关
+     */
     form.on("switch(changeSwitch)", function (obj) {
         var url = $(this).data('url')
         if (url && url !== "undefined") {
@@ -86,6 +89,9 @@ layui.use(['element', 'jquery', 'form'], function () {
         }
         return false;
     })
+    /**
+     * 监听提交
+     */
     form.on("submit(mlFormSubmit)", function (obj) {
         var action = $(obj.form).attr('action'), timeout = function () {
             setTimeout(function () {
@@ -101,7 +107,11 @@ layui.use(['element', 'jquery', 'form'], function () {
                 $(obj.elem).text(res.msg).removeClass('layui-btn-disabled')
                 if (res.code == 0) {
                     parent.layer.closeAll()
-                    parent.layui.ml.tableInstance.reload()
+                    if (typeof parent.layui.ml != "undefined") {
+                        parent.layui.ml.tableInstance.reload()
+                    } else {
+                        parent.tableInstance.reload()
+                    }
                 }
                 timeout()
             },
