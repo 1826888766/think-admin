@@ -1,8 +1,8 @@
 <div class="layui-card">
     <div class="layui-card-body">
         <div class="layui-form layui-form-pane" id="mySearch"></div>
-        <div>
-            <div onclick=layerOpen('{:url("add")}',[],"添加") class="layui-btn layui-btn-normal">添加</div>
+        <div class="layui-btn-group">
+            {ta:btn url="/console/module/add" iframe="1" theme="normal"}添加{/ta:btn}
         </div>
         <table class="layui-table" lay-filter="myTable" id="myTable"></table>
     </div>

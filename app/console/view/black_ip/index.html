@@ -3,7 +3,7 @@
         <blockquote class="layui-elem-quote">注意：当黑白名单同时存在时，优先白名单，并且不会再检查黑名单</blockquote>
         <div class="layui-form layui-form-pane" id="mySearch"></div>
         <div class="layui-btn-group">
-            {ta:btn url="/console/blackip/add" iframe="1" theme="normal"}添加{/ta:btn}
+            {ta:btn url="/console/black_ip/add" iframe="1" theme="normal"}添加{/ta:btn}
         </div>
         <table class="layui-table" lay-filter="myTable" id="myTable"></table>
     </div>
@@ -28,13 +28,21 @@
                         {value: 2, name: "白名单"},
                     ]
                 },
-                {'field': "status", 'title': "状态", width: 140, search: true, type: "switch", text: "禁用|正常",url:"/console/blackip/status"},
+                {
+                    'field': "status",
+                    'title': "状态",
+                    width: 140,
+                    search: true,
+                    type: "switch",
+                    text: "禁用|正常",
+                    url: "/console/black_ip/status"
+                },
                 {'field': "count", 'title': "拦截次数", width: 100},
                 {'field': "create_time", 'title': "最后请求时间", width: 150},
                 {'field': "update_time", 'title': "最后请求时间", width: 150, type: "date", range: true, "search": true},
                 {
                     'field': "field", 'title': "操作", width: 100, btns: [
-                        {title: "删除",class:"layui-btn-danger", click: "del('{{d.id}}')",}]
+                        {title: "删除", class: "layui-btn-danger", click: "del('{{d.id}}')",}]
                 }
             ]]
         })

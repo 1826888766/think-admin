@@ -68,7 +68,7 @@ class Request
 
         Log::add($data);
         if ($disable) {
-            return Response::create('当前ip：' . $request->ip() . ",已被限制请求");
+            return Response::create('<h1 style="text-align: center"> 403 Forbidden</h1><h3 style="text-align: center">ip:' . $request->ip() . '</h3>', "html", 403);
         }
         return $next($request);
     }
