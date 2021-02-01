@@ -8,6 +8,7 @@ use app\common\model\Module;
 use app\common\model\Role;
 use app\common\model\User;
 use think\facade\View;
+use think\helper\Str;
 use think\Model;
 
 /**
@@ -114,7 +115,7 @@ class ConsoleBase extends BaseController
         if ($this->checkLogin) {
             $this->checkLogin();
         }
-        $url = app('http')->getName() . "/" . $this->request->controller(true) . "/" . $this->request->action(true);
+        $url = app('http')->getName() . "/" . Str::snake($this->request->controller()) . "/" . Str::snake($this->request->action());
         $currentMenu = Menu::getCurrentMenu($url);
         if ($this->checkAuth) {
             if (!$currentMenu) {
