@@ -5,6 +5,8 @@ namespace app\middleware;
 
 use app\common\model\BlackIp;
 use app\common\model\Log;
+use GatewayWorker\Lib\Gateway;
+use think\facade\Cache;
 use think\Response;
 
 class Request
@@ -68,9 +70,22 @@ class Request
         if ($user) {
             $data['admin_id'] = $user['id'];
         }
-
+        $max = 30;
         Log::add($data);
         if ($disable) {
+            $key = "ip_" . md5($request->ip() . date("YmdH"));
+            if (Cache::has($key)) {
+                $num = Cache::get($key);
+            } else {
+                $num = 1;
+            }
+            if ($num > $max) {
+                Cache::get($key);
+            }
+            $data = ['type' => 'notice', 'msg' => "<a>ip:{$request->ip()},小时请求已超过{$max}</a>"];
+            if (strtoupper(substr(PHP_OS, 0, 3)) !== 'WIN') {
+                Gateway::sendToAll(json_encode($data));
+            }
             return Response::create('<h1 style="text-align: center"> 403 Forbidden</h1><h3 style="text-align: center">ip:' . $request->ip() . '</h3>', "html", 403);
         }
         return $next($request);
