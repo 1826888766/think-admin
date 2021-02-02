@@ -23,7 +23,7 @@ class Events
      */
     public static function onWorkerStart(Worker $businessWorker)
     {
-
+        $businessWorker->transport = "ssl";
     }
 
     /**

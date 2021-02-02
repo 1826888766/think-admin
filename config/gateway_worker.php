@@ -17,11 +17,19 @@ return [
     'host'                  => env('gateway.host', '0.0.0.0'), // 监听地址
     'port'                  => env('gateway.port', 2345), // 监听端口
     'socket'                => '', // 完整监听地址
-    'context'               => [], // socket 上下文选项
+    'context'               => [
+        'ssl' => array(
+            // 请使用绝对路径
+            'local_cert'                 => '/www/server/panel/vhost/cert/think-admin.tspalace.top/fullchain.pem', // 也可以是crt文件
+            'local_pk'                   => '/www/server/panel/vhost/cert/think-admin.tspalace.top/privkey.pem',
+            'verify_peer'               => false,
+            // 'allow_self_signed' => true, //如果是自签名证书需要开启此选项
+        )
+    ], // socket 上下文选项
     'register_deploy'       => true, // 是否需要部署register
     'businessWorker_deploy' => true, // 是否需要部署businessWorker
     'gateway_deploy'        => true, // 是否需要部署gateway
-
+    'transport'             => 'ssl',
     // Register配置
     'registerAddress'       => '127.0.0.1:1236',
 

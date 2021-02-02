@@ -14,7 +14,7 @@ layui.define([
     }
 
     ws.prototype.connect = function () {
-        this.socket = new WebSocket("ws://39.98.129.179:2345");
+        this.socket = new WebSocket("wss://think-admin.tspalace.top:2345");
         this.socket.onmessage = this.onmessage.bind(this);
         this.socket.onopen = this.onopen.bind(this);
         this.socket.onclose = this.onclose.bind(this);
