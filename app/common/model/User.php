@@ -37,7 +37,7 @@ class User extends Model
 
     public static function onBeforeUpdate(Model $model): void
     {
-        if (password_needs_rehash($model->password, PASSWORD_DEFAULT)) {
+        if ($model->password && password_needs_rehash($model->password, PASSWORD_DEFAULT)) {
             $model->password = create_password($model->password);
         } else {
             $model->hidden(['password']);
