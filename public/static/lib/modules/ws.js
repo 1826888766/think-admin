@@ -7,14 +7,13 @@ layui.define([
         this.reconnect = 1;
         this.sleep = 3000;
         this.timeout = 0;
-        this.heart_msg = '{"type":"ping"}';
+        this.heart_msg = '{"type":"heart"}';
         this.heart_sleep = 30000;
         this.heart_timeout = 0;
-        this.connect()
     }
 
-    ws.prototype.connect = function () {
-        this.socket = new WebSocket("wss://think-admin.tspalace.top:2345");
+    ws.prototype.connect = function (url) {
+        this.socket = new WebSocket(url);
         this.socket.onmessage = this.onmessage.bind(this);
         this.socket.onopen = this.onopen.bind(this);
         this.socket.onclose = this.onclose.bind(this);
@@ -47,9 +46,10 @@ layui.define([
     }
 
     ws.prototype.heart = function () {
-        this.socket.send(this.heart_msg)
         var that = this;
+        clearTimeout(this.heart_timeout);
         this.heart_timeout = setTimeout(function () {
+            that.socket.send(that.heart_msg)
             that.heart();
         }, this.heart_sleep)
     }
@@ -66,7 +66,10 @@ layui.define([
         var msgObj = JSON.parse(data.data)
         if (msgObj.type === "notice") {
             this.msg(msgObj.msg)
+        } else if (msgObj.type === "ping") {
+            this.socket.send(this.heart_msg)
         }
+        this.heart()
     }
 
     ws.prototype.msg = function (msg, options) {

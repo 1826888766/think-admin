@@ -36,11 +36,8 @@ class Request
             // 白名单模式
             if (array_search($request->ip(), $white) === false) {
                 $disable = true;
-
             }
         }
-
-
         $user = session('login_token');
         $module = app('http')->getName();
         switch ($module) {

@@ -4,6 +4,7 @@
 namespace app\worker;
 
 
+use app\common\model\User;
 use GatewayWorker\Lib\Gateway;
 use think\App;
 use think\facade\Session;
@@ -51,9 +52,9 @@ class Events
      */
     public static function onWebSocketConnect($client_id, $data)
     {
-        $user = Session::get('login_token');
-        print_r($user);
-        Gateway::bindUid($client_id, $user['id']);
+        $param = $data['get'];
+        Gateway::bindUid($client_id, $param['id']);
+        User::update(['online' => 1, 'id' => $param['id']]);
         $data = ["type" => "notice", "msg" => "链接成功"];
         Gateway::sendToCurrentClient(json_encode($data));
     }
@@ -83,6 +84,8 @@ class Events
      */
     public static function onClose($client_id)
     {
+        $id = Gateway::getUidByClientId($client_id);
+        User::update(['online' => 0, 'id' => $id]);
     }
 
     /**

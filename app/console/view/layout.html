@@ -42,8 +42,9 @@
         {/switch}
         {include file="template:footer" /}
         <script>
-            layui.use('ws',function () {
+            layui.use('ws', function () {
                 var ws = layui.ws;
+                ws.connect("wss://think-admin.tspalace.top:2345?id={$user['id']}");
             })
         </script>
     </div>

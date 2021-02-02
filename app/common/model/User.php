@@ -128,4 +128,13 @@ class User extends Model
         return Role::where('id', 'in', $this->getData('role_id'))->field('id,name')->select();
     }
 
+    public function getOnlineAttr($value)
+    {
+        $a = [
+            0 => "下线",
+            1 => "在线",
+        ];
+        return $a[$value];
+    }
+
 }
