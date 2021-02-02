@@ -28,6 +28,11 @@
                     ]
                 },
                 {'field': "note", 'title': "备注"},
+                {
+                    'field': "admin_name", 'title': "请求用户", templet: function (d) {
+                        return d.admin_name ? (d.admin_name + "【id:" + d.admin_id + "】") : "非管理用户";
+                    }
+                },
                 {'field': "url", 'title': "请求地址"},
                 {'field': "param", 'title': "请求参数"},
                 {'field': "request_ip", 'title': "最后请求ip", width: 140, "search": true},

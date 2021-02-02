@@ -38,7 +38,7 @@ class Request
         }
 
 
-        $user = session('user');
+        $user = session('login_token');
         $module = app('http')->getName();
         switch ($module) {
             case 'api':

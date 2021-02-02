@@ -1,3 +1,29 @@
+<style>
+    .layui-btn-avatar{
+        width: 100px;
+        height: 100px;
+        position: relative;
+    }
+    .layui-btn-avatar img{
+        width: 100%;
+        height: 100%;
+        border: none;
+        background: #FFFFFF;
+    }
+    .layui-btn-avatar .layui-avatar-bg{
+        position: absolute;
+        top: 0;
+        left: 0;
+        border: 1px solid #D0D0D0;
+        width: 100%;
+        text-align: center;
+        height: 100%;
+        line-height: 100px;
+    }
+    .layui-avatar-bg i{
+        font-size: 35px;
+    }
+</style>
 <div class="layui-card">
     <div class="layui-card-body ">
         <style>
@@ -22,11 +48,17 @@
     </div>
 </div>
 <script>
+
     var data = {:json_encode($formConfig.data?:[])};
     var action = '{$formConfig.action}';
-    layui.use(['form','jquery'],function () {
+    layui.use(['form','jquery','ml'],function () {
         var form = layui.form;
         var $ = layui.jquery;
+        var ml = layui.ml;
+        // 渲染多上传组件
+        ml.renderUploadList(".mlUpload")
         formVal("myForm",data||{})
+
     })
+
 </script>

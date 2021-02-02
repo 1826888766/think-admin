@@ -19,6 +19,17 @@ class Log extends ModelBase
         return $a[$value];
     }
 
+    public static function allPage($where = [])
+    {
+        $limit = request()->param('limit', 10);
+        return self::where($where)->with(['admin'])->order('id desc')->paginate($limit);
+    }
+
+    public function admin()
+    {
+        return $this->hasOne(User::class, 'id', 'admin_id')->bind(['admin_name' => 'nickname']);
+    }
+
     public static function add($data)
     {
         if ($data['param']) {

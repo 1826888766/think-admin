@@ -21,6 +21,7 @@ class User extends ConsoleBase
     protected $validateAddScene = 'add';
     protected $formField = [
         ['field' => 'id', 'type' => 'hidden'],
+        ['field' => 'avatar', 'type' => 'avatar','label'=>'头像'],
         ['field' => 'nickname', 'label' => '昵称', 'mid' => '只能是汉字、字母和数字'],
         ['field' => 'username', 'label' => '登录账号', 'mid' => '只能是字母和数字'],
         ['field' => 'mobile', 'label' => '手机号'],

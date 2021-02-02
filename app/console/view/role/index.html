@@ -26,7 +26,7 @@
                         if (d.id == 1) {
                             return "全部权限"
                         }
-                        return "<div><span style='cursor: pointer;color: #1E9FFF' onclick=layerOpen('{:url(\"permission\")}',{id:'{{d.id}}'},'权限设置')>设置</span></div>";
+                        return "<div><span style='cursor: pointer;color: #1E9FFF' onclick=layerOpen('{:url(\"permission\")}',{id:"+d.id+"},'权限设置')>设置</span></div>";
                     }
                 },
                 {

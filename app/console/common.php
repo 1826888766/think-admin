@@ -183,6 +183,12 @@ function createFormItemHtml($item, $is_child = false)
             }
             $html .= '</div>';
             break;
+        case "avatar":
+            $html .= '<div class="layui-input-inline">';
+            $html .= "<input type='hidden' name={$item['field']}>";
+            $html .= "<div class='layui-btn-avatar mlUpload' data-name={$item['field']} lay-data=" . getField($item, 'layData', '{}') . " ><img class='layui-hide' src='' /><div class='layui-avatar-bg'><i class='layui-icon layui-icon-addition'></i></div></div>   ";
+            $html .= '</div>';
+            break;
         case 'hidden':
             $html .= " <input type={$item['type']} name={$item['field']} >";
             break;

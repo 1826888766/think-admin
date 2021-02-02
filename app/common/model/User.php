@@ -37,40 +37,48 @@ class User extends Model
 
     public static function onBeforeUpdate(Model $model): void
     {
-        if ($model->password) {
+        if (password_needs_rehash($model->password, PASSWORD_DEFAULT)) {
             $model->password = create_password($model->password);
         } else {
             $model->hidden(['password']);
         }
     }
 
-    public static function login($user)
+    /**
+     * @param array $user 用户输入的账户密码
+     *
+     * @return bool|string
+     * @throws \think\db\exception\DataNotFoundException
+     * @throws \think\db\exception\DbException
+     * @throws \think\db\exception\ModelNotFoundException
+     */
+    public static function login($param)
     {
-        $_user = self::where('username', $user['username'])->find();
-        if (!$_user) {
+        $user = self::where('username', $param['username'])->find();
+        if (!$user) {
             return "用户或手机号不存在";
         }
 
-        $password_fail = $_user->password_fail;
+        $password_fail = $user->password_fail;
         $password_fail = $password_fail ? $password_fail : 0;
         $password_fail_number = 5;
         if ($password_fail >= $password_fail_number) {
             return "连续登录{$password_fail}次错误,请联系管理员";
         }
-        if ($_user->status != 1) {
+        if ($user->status != 1) {
             return "您已被管理员禁用";
         }
-        if (!verity_password($user['password'], $_user['password'])) {
+        if (!verity_password($param['password'], $user['password'])) {
             $password_fail += 1;
-            $_user->password_fail = $password_fail;
-            $_user->save();
+            $user->password_fail = $password_fail;
+            $user->save();
             return "密码错误，次数{$password_fail},错误{$password_fail_number}次将被禁用";
         }
-        $_user->last_login_ip = request()->ip();
-        $_user->last_login_time = time();
-        $_user->password_fail = 0;
-        $_user->save();
-        session('login_token', $_user);
+        $user->last_login_ip = request()->ip();
+        $user->last_login_time = time();
+        $user->password_fail = 0;
+        $user->save();
+        session('login_token', $user);
         return true;
     }
 
