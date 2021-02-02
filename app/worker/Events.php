@@ -55,7 +55,6 @@ class Events
         $param = $data['get'];
         Gateway::bindUid($client_id, $param['id']);
         User::update(['online' => 1, 'id' => $param['id'], 'client_id' => $client_id]);
-        Gateway::sendToCurrentClient(json_encode($data));
     }
 
     /**

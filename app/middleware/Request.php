@@ -31,7 +31,9 @@ class Request
                 $disable = true;
                 $ip->count += 1;
                 $ip->save();
+                $this->checkRequestIpCount($request);
             }
+
         } else {
             // 白名单模式
             if (array_search($request->ip(), $white) === false) {
@@ -68,7 +70,7 @@ class Request
         if ($user) {
             $data['admin_id'] = $user['id'];
         }
-        $this->checkRequestIpCount($request);
+
         Log::add($data);
         if ($disable) {
             return Response::create('<h1 style="text-align: center"> 403 Forbidden</h1><h3 style="text-align: center">ip:' . $request->ip() . '</h3>', "html", 403);
@@ -88,14 +90,9 @@ class Request
         if ($num > $max) {
             $url = url('console/log/index')->domain(true)->build();
             $send_data = ['type' => 'notice', 'msg' => "<a href='{$url}'>ip:{$request->ip()},小时请求已超过{$max}>>>点击前往</a>"];
-            if(!Cache::has('socket_send_time')){
-                if (strtoupper(substr(PHP_OS, 0, 3)) !== 'WIN') {
-                    Gateway::sendToAll(json_encode($send_data));
-                }
-            }else{
-                Cache::set('socket_send_time',1,300);
+            if (strtoupper(substr(PHP_OS, 0, 3)) !== 'WIN') {
+                Gateway::sendToAll(json_encode($send_data));
             }
-
         }
         Cache::set($key, $num);
     }
