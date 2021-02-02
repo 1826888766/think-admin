@@ -86,11 +86,16 @@ class Request
             $num = 1;
         }
         if ($num > $max) {
-            $url = url('console/black_ip/index')->domain(true)->build();
+            $url = url('console/log/index')->domain(true)->build();
             $send_data = ['type' => 'notice', 'msg' => "<a href='{$url}'>ip:{$request->ip()},小时请求已超过{$max}>>>点击前往</a>"];
-            if (strtoupper(substr(PHP_OS, 0, 3)) !== 'WIN') {
-                Gateway::sendToAll(json_encode($send_data));
+            if(!Cache::has('socket_send_time')){
+                if (strtoupper(substr(PHP_OS, 0, 3)) !== 'WIN') {
+                    Gateway::sendToAll(json_encode($send_data));
+                }
+            }else{
+                Cache::set('socket_send_time',1,300);
             }
+
         }
         Cache::set($key, $num);
     }
