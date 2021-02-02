@@ -1,0 +1,10 @@
+body .layer-ext-ml .layui-layer-title {
+    background: #2d2d2d;
+    color: #FFFFFF;
+}
+
+body .layer-ext-ml .layui-layer-btn0{
+    background-color:#2d2d2d;
+    color: #FFFFFF;
+    border-color: #2d2d2d;
+}
