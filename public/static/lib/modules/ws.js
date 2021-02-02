@@ -24,6 +24,7 @@ layui.define([
         this.reconnect = 1;
         clearTimeout(this.timeout)
         this.heart()
+        this.msg("<a href=''>ip:84.17.57.165,小时请求已超过30</a>")
     }
 
     ws.prototype.disConnect = function () {
@@ -69,10 +70,10 @@ layui.define([
     }
 
     ws.prototype.msg = function (msg, options) {
-        var div = "<div>" + msg + "</div>"
+        var div = "<div class='toast-a'>" + msg + "</div>"
         var config = $.extend({
             text: div,
-            sticky: false,
+            sticky: true,
             position: 'top-right',
             type: 'success',
             closeText: "",

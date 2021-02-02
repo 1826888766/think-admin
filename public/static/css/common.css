@@ -11,6 +11,15 @@ body {
     background-color: #1E9FFF;
     border-color: #1E9FFF;
 }
+.toast-item p{
+    margin-right: 30px;
+    color: white;
+}
+
+.toast-item p a{
+    color: #FFFFFF;
+    text-decoration: underline;
+}
 
 .text-red {
     color: #b30101;
