@@ -8,8 +8,8 @@
                 {$user.nickname|default=''}
             </a>
             <dl class="layui-nav-child">
-                <dd><a href="{:url('login/info')}">基本资料</a></dd>
-                <dd><a href="{:url('login/token')}">安全设置</a></dd>
+                <dd><a href="javascript:layerOpen('{:url('login/info')}')">基本资料</a></dd>
+                <dd><a href="javascript:layerOpen('{:url('login/token')}')">安全设置</a></dd>
             </dl>
         </li>
         <li class="layui-nav-item"><a href="{:url('login/logout')}">退了</a></li>
