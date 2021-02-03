@@ -84,9 +84,12 @@ class Menu extends Model
      *
      * @return string|null
      */
-    public function getUrlAttr($value): string
+    public function getUrlAttr($value, $row = []): string
     {
         if ($value && !(Str::startsWith($value, 'http://') || Str::startsWith($value, 'https://'))) {
+            if (isset($row['is_plugin']) && $row['is_plugin'] == 1) {
+                return (string)addons_url($value, [], true, true);
+            }
             return url($value)->domain(true)->build();
         }
         return $value;

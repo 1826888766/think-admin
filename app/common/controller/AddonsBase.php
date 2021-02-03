@@ -61,8 +61,6 @@ abstract class AddonsBase
         $this->view = clone View::engine('Think');
         $this->view->config([
             'view_path' => $this->addon_path . 'view' . DIRECTORY_SEPARATOR,
-            'layout_on' => true,
-            'layout_name' => 'addons'
         ]);
 
         // 控制器初始化
@@ -162,15 +160,7 @@ abstract class AddonsBase
             return $info;
         }
 
-        // 文件属性
-        $info = $this->info ?? [];
-        // 文件配置
-        $info_file = $this->addon_path . 'info.ini';
-        if (is_file($info_file)) {
-            $_info = parse_ini_file($info_file, true, INI_SCANNER_TYPED) ?: [];
-            $_info['url'] = addons_url();
-            $info = array_merge($_info, $info);
-        }
+        $info = $this->getConfig(true);
         Config::set($info, $this->addon_info);
 
         return isset($info) ? $info : [];
@@ -269,4 +259,15 @@ abstract class AddonsBase
 
     //必须卸载插件方法
     abstract public function uninstall();
+
+    public function setting()
+    {
+        $this->assign("formConfig", [
+            'action' => $this->request->action(),
+            'field' => $this->getSetting(),
+            'method' => 'POST',
+            'data' => $this->getConfig()
+        ]);
+        return $this->fetch("console@template:form");
+    }
 }

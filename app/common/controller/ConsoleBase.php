@@ -25,7 +25,7 @@ class ConsoleBase extends BaseController
     protected $param = [];
     protected $checkLogin = true;
     protected $checkAuth = true;
-    protected $iframe = 0;
+    protected $iframe = 1;
     protected $layout = "layout";
     protected $formField = [];
     // 模型
