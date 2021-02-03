@@ -1,47 +1,300 @@
+<style>
+    .flex {
+        margin-bottom: 10px;
+    }
+
+    .flex span {
+        margin-right: 20px;
+        cursor: pointer;
+    }
+
+    .flex span.layui-this {
+        color: #1b639e;
+    }
+
+    [class^="code-"] {
+        color: #ff0000;
+    }
+
+    .code-200 {
+        color: green;
+    }
+</style>
+
 <form class="layui-form">
     <div class="layui-form-item">
-        <label class="layui-form-label" style="padding: 0;width: 110px"><select name="" id="">
+        <label class="layui-form-label" style="padding: 0;width: 110px"><select name="method" id="">
             <option value="post">POST</option>
             <option value="post">GET</option>
-            <option value="post">PUT</option>
-            <option value="post">DELETE</option>
         </select></label>
         <div class="layui-input-inline" style="width: 500px">
-            <input type="text" class="layui-input" placeholder="请输入请求地址">
+            <input type="text" lay-verify="required" class="layui-input" name="url" placeholder="请输入请求地址">
         </div>
         <button class="layui-btn layui-btn-normal" type="submit" lay-submit="" lay-filter="formSubmit">发送</button>
     </div>
 </form>
 
 
-<div class="layui-tab layui-tab-brief " lay-filter="requestParam">
+<div class="layui-tab layui-tab-brief" style="background-color: #ffffff;" lay-filter="requestParam">
     <ul class="layui-tab-title">
-        <li class="layui-this">参数设置</li>
-        <li class="">header设置</li>
-        <li class="">cookie设置</li>
+        <li class="layui-this" data-type="params">参数设置</li>
+        <li class="" data-type="headers">header设置</li>
+        <li class="" data-type="cookies">cookie设置</li>
     </ul>
     <div class="layui-tab-content">
-        <div class="flex"><span>美化</span><span>预览</span></div>
-        <div class="request-param">
-            <div class="request-param-item">
-                1
+        <div class="layui-tab-item params layui-show">
+            <div class="layui-row request-param-item layui-col-space10">
+                <div class="layui-col-sm1">
+                    键
+                </div>
+                <div class="layui-col-sm1">
+                    类型
+                </div>
+                <div class="layui-col-sm4">
+                    值
+                </div>
+                <div class="layui-col-sm2">
+                    操作
+                </div>
+            </div>
+            <div class="request-param layui-form">
+
+            </div>
+            <div style="clear: both;">
+                <button class="layui-btn  layui-btn-normal addRow" data-type="params">添加</button>
+            </div>
+        </div>
+        <div class="layui-tab-item headers">
+            <div class="layui-row request-param-item layui-col-space10">
+                <div class="layui-col-sm1">
+                    键
+                </div>
+                <div class="layui-col-sm4">
+                    值
+                </div>
+                <div class="layui-col-sm2">
+                    操作
+                </div>
+            </div>
+            <div class="request-param layui-form">
+
+            </div>
+            <div style="clear: both;">
+                <button class="layui-btn  layui-btn-normal addRow" data-type="headers">添加</button>
+            </div>
+        </div>
+        <div class="layui-tab-item cookies">
+            <div class="layui-row request-param-item layui-col-space10">
+                <div class="layui-col-sm1">
+                    键
+                </div>
+                <div class="layui-col-sm4">
+                    值
+                </div>
+                <div class="layui-col-sm2">
+                    操作
+                </div>
+            </div>
+            <div class="request-param layui-form">
+
+            </div>
+            <div style="clear: both;">
+                <button class="layui-btn  layui-btn-normal addRow" data-type="cookies">添加</button>
             </div>
         </div>
     </div>
 </div>
 
-<div class="layui-tab layui-tab-brief " lay-filter="response">
+<div class="layui-tab layui-tab-brief " style="background-color: #ffffff;" lay-filter="response">
     <ul class="layui-tab-title">
-        <li class="layui-this">响应体</li>
-        <li class="">响应头</li>
-        <li class="">cookie设置</li>
+        <li class="layui-this" data-type="body">响应体</li>
+        <li class="" data-type="header">响应头</li>
     </ul>
     <div class="layui-tab-content">
-        <div class="flex"><span>美化</span><span>预览</span></div>
-        <div class="form-param">
-            <div class="form-param-item">
-                1
-            </div>
+        <div class="flex"><span class="layui-this html" onclick="changeTheme('html')">美化</span><span
+                onclick="changeTheme('text')" class="text">预览</span></div>
+        <div>
+            <div class="time"></div>
+            <div class="code"></div>
+        </div>
+
+        <div class="response">
+            <iframe name="response" style="width: 100%;height: auto;" frameborder="0"></iframe>
         </div>
     </div>
 </div>
+<script type="text/html" id="request-param_tpl">
+    {{# layui.each(d.data,function(index,item){ }}
+    <div class="layui-row request-param-item layui-col-space10" data-index="{{index}}" data-type="{{d.type}}">
+        <div class="layui-col-sm1">
+            <input type="text" placeholder="请输入" data-key="key" value="{{item.key||''}}" class="layui-input">
+        </div>
+        {{# if(d.type == 'params'){ }}
+        <div class="layui-col-sm1">
+            <select lay-filter="type">
+                <option value="string" {{item.type=='string'?'selected':''}}>string</option>
+                <option value="int" {{item.type=='int'?'selected':''}}>int</option>
+                <option value="object" {{item.type=='object'?'selected':''}}>object</option>
+                <option value="array" {{item.type=='array'?'selected':''}}>array</option>
+            </select>
+        </div>
+        {{# } }}
+        <div class="layui-col-sm4">
+            <input type="text" placeholder="请输入" data-key="value" value="{{item.value||''}}" class="layui-input">
+        </div>
+        <div class="layui-col-sm2">
+            <button class="layui-btn delRow layui-btn-danger">删除</button>
+        </div>
+    </div>
+    {{# }) }}
+</script>
+<script>
+    var headers = [{key:"Content-Type",value:"application/json"}], cookies = [{}], params = [{}], response, response_theme = "html", response_type = "body";
+    layui.use(['element', 'form', 'laytpl'], function () {
+        var form = layui.form, element = layui.element;
+        renderRequestParam("params")
+        element.on("tab(requestParam)", function (data) {
+            var type = $(this).data("type")
+            renderRequestParam(type)
+        })
+        element.on("tab(response)", function (data) {
+            console.log(data)
+            var type = $(this).data("type")
+            renderResponse(type)
+        })
+        $(".layui-tab").on("click", ".delRow", function () {
+            var data = $(this).parents(".request-param-item").data()
+            var func = new Function(data['type'] + ".splice(" + data['index'] + ",1)");
+            func()
+            renderRequestParam(data['type'])
+        }).on("click", ".addRow", function () {
+            var data = $(this).data()
+            var func = new Function(data['type'] + ".push({})");
+            func()
+            renderRequestParam(data['type'])
+        }).on("change", "input", function () {
+            var data = $(this).parents(".request-param-item").data()
+            var value = $(this).val()
+            var key = $(this).data("key")
+            var func = new Function(data['type'] + "[" + data['index'] + "]['" + key + "']='" + value + "'");
+            func()
+            renderRequestParam(data['type'])
+        })
+        form.on("select(type)", function (obj) {
+            var data = $(obj.elem).parents(".request-param-item").data()
+            var func = new Function(data['type'] + "[" + data['index'] + "]['type']='" + obj.value + "'");
+            func()
+            renderRequestParam(data['type'])
+        })
+        form.on('submit(formSubmit)', function (data) {
+            var time = Date.now();
+            $.ajax({
+                method: data.field.method,
+                url: data.field.url,
+                headers: getParam("headers"),
+                cookies: getParam("cookies"),
+                data: JSON.stringify(getParam("params")),
+                complete: function (data) {
+                    response = data;
+                    renderResponse("body")
+                    $(".time").html('请求耗时：' + (Date.now() - time) + "ms")
+                    $(".code").html('<h2 class="code-"' + response.status + '>' + response.status + "</h2>")
+
+                }
+            })
+            return false;
+        })
+    })
+
+    function changeTheme(type) {
+        response_theme = type;
+        renderResponse()
+        $("."+type).addClass('layui-this').siblings().removeClass('layui-this')
+    }
+
+    function getParam(type) {
+        var func = new Function("return " + type);
+        var data = {}
+        layui.each(func(), function (index, item) {
+            if(item.key){
+                data[item.key] = item.value
+                if (item.type === "string") {
+                    data[item.key] = item.value.toString()
+                } else if (item.type === "number") {
+                    data[item.key] = Number(item.value)
+                }
+            }
+        })
+        return data;
+    }
+
+    function renderResponse(type) {
+        if (!response) return;
+        if (type) {
+            response_type = type;
+        }
+        var win = $(".response iframe")[0].contentWindow;
+        if (response_type === "body") {
+            var html = response.responseText;
+            if (response_theme === "html") {
+                try {
+                    JSON.parse(response.responseText)
+                    html = prettyFormat(html)
+                    win.document.documentElement.innerHTML = "<pre>" + html + "</pre>";
+                } catch (e) {
+                    win.document.documentElement.innerHTML = html;
+                }
+            } else {
+                win.document.documentElement.innerText = html;
+            }
+        } else if (response_type === "header") {
+            html = response.getAllResponseHeaders();
+            if (response_theme === "html") {
+                html = "<pre>" + html + "</pre>"
+                win.document.documentElement.innerHTML = html;
+            } else {
+                win.document.documentElement.innerText = html;
+            }
+        }
+        $(".response iframe").height($(window).height())
+    }
+    function prettyFormat(str) {
+        try {
+            // 设置缩进为2个空格
+            str = JSON.stringify(JSON.parse(str), null, 2);
+            str = str
+                .replace(/&/g, '&')
+                .replace(/</g, '<')
+                .replace(/>/g, '>');
+            return str.replace(/("(\\u[a-zA-Z0-9]{4}|\\[^u]|[^\\"])*"(\s*:)?|\b(true|false|null)\b|-?\d+(?:\.\d*)?(?:[eE][+\-]?\d+)?)/g, function (match) {
+                var cls = 'number';
+                if (/^"/.test(match)) {
+                    if (/:$/.test(match)) {
+                        cls = 'key';
+                    } else {
+                        cls = 'string';
+                    }
+                } else if (/true|false/.test(match)) {
+                    cls = 'boolean';
+                } else if (/null/.test(match)) {
+                    cls = 'null';
+                }
+                return '<span class="' + cls + '">' + match + '</span>';
+            });
+        } catch (e) {
+            alert("异常信息:" + e);
+        }
+
+
+    }
+    function renderRequestParam(type) {
+        var html = $("#request-param_tpl").html();
+        var func = new Function("return " + type);
+        html = layui.laytpl(html).render({
+            type: type,
+            data: func()
+        })
+        $("." + type).find(".request-param").html(html)
+        layui.form.render("select")
+    }
+</script>
