@@ -1,0 +1,47 @@
+<form class="layui-form">
+    <div class="layui-form-item">
+        <label class="layui-form-label" style="padding: 0;width: 110px"><select name="" id="">
+            <option value="post">POST</option>
+            <option value="post">GET</option>
+            <option value="post">PUT</option>
+            <option value="post">DELETE</option>
+        </select></label>
+        <div class="layui-input-inline" style="width: 500px">
+            <input type="text" class="layui-input" placeholder="请输入请求地址">
+        </div>
+        <button class="layui-btn layui-btn-normal" type="submit" lay-submit="" lay-filter="formSubmit">发送</button>
+    </div>
+</form>
+
+
+<div class="layui-tab layui-tab-brief " lay-filter="requestParam">
+    <ul class="layui-tab-title">
+        <li class="layui-this">参数设置</li>
+        <li class="">header设置</li>
+        <li class="">cookie设置</li>
+    </ul>
+    <div class="layui-tab-content">
+        <div class="flex"><span>美化</span><span>预览</span></div>
+        <div class="request-param">
+            <div class="request-param-item">
+                1
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="layui-tab layui-tab-brief " lay-filter="response">
+    <ul class="layui-tab-title">
+        <li class="layui-this">响应体</li>
+        <li class="">响应头</li>
+        <li class="">cookie设置</li>
+    </ul>
+    <div class="layui-tab-content">
+        <div class="flex"><span>美化</span><span>预览</span></div>
+        <div class="form-param">
+            <div class="form-param-item">
+                1
+            </div>
+        </div>
+    </div>
+</div>

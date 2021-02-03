@@ -1,0 +1,20 @@
+<script src="/static/lib/layui/layui.js?v={:config('app.app_version')}"></script>
+<script src="/static/login/js/jquery-2.1.1.min.js"></script>
+<script src="/static/js/common.js?v={:config('app.app_version')}"></script>
+<script src="/static/js/jquery.toastmessage.js?v={:config('app.app_version')}"></script>
+<script>
+
+    layui.config({
+        base: "/static/lib/modules/"
+    }).extend({
+        ml: "ml",
+        treeTable: "treeTable"
+    }).use(['layer'], function () {
+        layui.layer.config({
+            extend: 'ml/style.css', //加载您的扩展样式
+            skin: 'layer-ext-ml',
+            closeBtn: 2
+        });
+    })
+
+</script>

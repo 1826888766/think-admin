@@ -57,7 +57,7 @@ class Menu extends Model
     public static function getCurrentMenu($url)
     {
         // 查询出所有符合条件的
-        return self::where(['url' => $url])->where('status', 1)->field('id,name,url,is_auth')->find();
+        return self::where(['url' => $url])->where('status', 1)->field('id,name,url,is_auth,is_plugin')->find();
 
     }
 
@@ -235,5 +235,37 @@ class Menu extends Model
     {
         $where = [];
         return self::where($where)->paginate($limit);
+    }
+
+    /**
+     * @param int|array $module_id  所属模块
+     * @param string    $name       菜单名称
+     * @param string    $url        打开链接
+     * @param int       $parent_id  父节点
+     * @param int       $is_show    是否显示
+     * @param int       $type       菜单类型 0 视图 1 按钮
+     * @param bool      $check_auth 是否验证权限
+     * @param string    $target     跳转方式
+     *
+     * @return Menu|Model
+     */
+    public static function addPluginMenu($module_id, $name = null, $url = null, $parent_id = 0, $is_show = 1, $type = 0, $check_auth = true, $target = "_self")
+    {
+        $data = [];
+        $data['is_plugin'] = 1;
+        if (is_array($module_id)) {
+            $data = array_merge_recursive($data, $module_id);
+        } else {
+            $data['name'] = $name;
+            $data['url'] = $url;
+            $data['module_id'] = $module_id;
+            $data['status'] = 1;
+            $data['is_auth'] = $check_auth;
+            $data['target'] = $target;
+            $data['type'] = $type;
+            $data['is_show'] = $is_show;
+            $data['parent_id'] = $parent_id;
+        }
+        return self::create($data);
     }
 }
