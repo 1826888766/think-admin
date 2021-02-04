@@ -20,8 +20,7 @@ class Api extends Plugin
     }
 
 
-//测试环境  php7.2
-    function request($url, $method = "get", $params = array(), $header = array(), $cookie = [], $time_out = 30)
+    function request($url, $method = "get", $params = array(), $header = array(), $cookie = [])
     {
         if ($method == "get"){
             if(stripos($url,"?")){

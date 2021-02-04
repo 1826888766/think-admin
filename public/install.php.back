@@ -1,0 +1,176 @@
+<!doctype html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+    <title>系统安装</title>
+    <link rel="stylesheet" href="/static/lib/layui/css/layui.css">
+    <style>
+        .container {
+            width: 310px;
+            margin: 100px auto;
+            text-align: center;
+        }
+
+        .layui-form {
+            margin: 10px 0;
+        }
+
+        #notice {
+            overflow: hidden;
+            padding: 5px;
+            height: 300px;
+            border: 5px #B5CFD9 double;
+            text-align: left;
+        }
+    </style>
+    <script src="/static/lib/layui/layui.js"></script>
+    <script src="/static/login/js/jquery-2.1.1.min.js"></script>
+    <script>
+        function showMessage(message) {
+            document.getElementById('notice').innerHTML += message + '<br/>';
+            document.getElementById('notice').scrollTop = 100000000;
+        }
+    </script>
+</head>
+<body>
+<div class="container">
+    <h1>安装信息</h1>
+    <form class="layui-form" method="post" action="">
+        <div class="layui-form-item">
+            <label for="host" class="layui-form-label">数据库地址</label>
+            <div class="layui-input-inline">
+                <input type="text" class="layui-input" name="host" value="<?php echo $_POST['host'] ?? '127.0.0.1' ?>"
+                       id="host">
+            </div>
+        </div>
+        <div class="layui-form-item">
+            <label for="database" class="layui-form-label">数据库名称</label>
+            <div class="layui-input-inline">
+                <input type="text" class="layui-input" name="database" value="<?php echo $_POST['database'] ?? 'th' ?>"
+                       id="database">
+            </div>
+        </div>
+        <div class="layui-form-item">
+            <label for="username" class="layui-form-label">数据库用户</label>
+            <div class="layui-input-inline">
+                <input type="text" class="layui-input" name="username"
+                       value="<?php echo $_POST['username'] ?? 'root' ?>"
+                       id="username">
+            </div>
+        </div>
+        <div class="layui-form-item">
+            <label for="password" class="layui-form-label">数据库密码</label>
+            <div class="layui-input-inline">
+                <input type="text" class="layui-input" name="password"
+                       value="<?php echo $_POST['password'] ?? '123456' ?>"
+                       id="password">
+            </div>
+        </div>
+        <div class="layui-form-item">
+            <label for="prefix" class="layui-form-label">数据库表前缀</label>
+            <div class="layui-input-inline">
+                <input type="text" class="layui-input" name="prefix" value="<?php echo $_POST['prefix'] ?? 'ta_' ?>"
+                       id="prefix">
+            </div>
+        </div>
+        <div class="layui-form-item">
+            <label for="port" class="layui-form-label">数据库端口</label>
+            <div class="layui-input-inline">
+                <input type="text" class="layui-input" value="<?php echo $_POST['port'] ?? '3306' ?>" name="port"
+                       id="port">
+            </div>
+        </div>
+        <div class="layui-form-item">
+            <button lay-submit="" lay-filter="formSubmit" type="submit"
+                    class="layui-btn layui-btn-sm layui-btn-normal">安装
+            </button>
+        </div>
+    </form>
+    <div id="notice"></div>
+    <?php
+    //检测完成后显示的信息
+    function showMessage($message)
+    {
+        echo '<script>showMessage("' . addslashes($message) . '");</script>\n' . str_repeat(' ', 1024 * 4);
+        flush();
+        ob_flush();
+    }
+
+    if ($_POST) {
+        ob_start();
+        $data = [
+            "HOSTNAME" => $_POST['host'],
+            "DATABASE" => $_POST['database'],
+            "USERNAME" => $_POST['username'],
+            "PREFIX" => $_POST['prefix'],
+            "PASSWORD" => $_POST['password'],
+            "HOSTPORT" => $_POST['port']
+        ];
+        $result = setEnv($data) ? '成功' : '失败';
+        showMessage('设置环境变量...' . $result);
+        $result = requireSql($_POST) ? '成功' : '失败';
+        showMessage('导入数据库...' . $result);
+        $result = rename(__DIR__ . "/install.php", __DIR__ . "/install.php.back") ? '成功' : '失败';
+        showMessage("删除安装文件..." . $result);
+        sleep(2);
+        showMessage("即将跳转首页..." . $result);
+        sleep(2);
+        echo '<script>window.location.href = location.protocol+"//"+location.host</script>'  . str_repeat(' ', 1024 * 4);
+        flush();
+        ob_flush();
+        ob_end_flush();
+    }
+
+    function requireSql($config)
+    {
+        try {
+            require __DIR__ . '/../vendor/autoload.php';
+            $mysql = new \think\db\connector\Mysql([
+                'type' => "mysql",
+                'hostname' => $config['host'],
+                // 数据库名
+                'database' => $config['database'],
+                // 用户名
+                'username' => $config['username'],
+                // 密码
+                'password' => $config['password'],
+                'prefix' => $config['prefix'],
+                'trigger_sql' => false,
+                // 端口
+                'hostport' => $config['port'],
+            ]);
+            $pdo = $mysql->connect();
+            $sql = file_get_contents(__DIR__ . "/../install/think_admin.sql");
+            $sql = str_replace("PREFIX_", $config['prefix'], $sql);
+            $sqlArr = explode(";" . PHP_EOL, $sql);
+            foreach ($sqlArr as $item) {
+                if ($item) {
+                    $pdo->exec($item);
+                }
+            }
+            return true;
+        } catch (Exception $exception) {
+            showMessage($exception->getMessage());
+            return false;
+        }
+    }
+
+    function setEnv($data)
+    {
+        $filename = __DIR__ . "/../.env";
+        if (!is_file($filename)) {
+            $env = file_get_contents(__DIR__ . "/../.example.env");
+        } else {
+            $env = file_get_contents($filename);
+        }
+        foreach ($data as $key => $value) {
+            $env = preg_replace("/({$key})+([\s]*)+=+([\s]*)+([.|\w]*)/", $key . ' = ' . $value, $env);
+        }
+        return file_put_contents($filename, $env);
+    }
+
+    ?>
+</div>
+</body>
+</html>
