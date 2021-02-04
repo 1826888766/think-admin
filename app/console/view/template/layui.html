@@ -7,8 +7,8 @@
     layui.config({
         base: "/static/lib/modules/"
     }).extend({
-        ml: "ml",
-        treeTable: "treeTable"
+        ml: "ml.js?v={:config('app.app_version')}",
+        treeTable: "treeTable.js?v={:config('app.app_version')}"
     }).use(['layer'], function () {
         layui.layer.config({
             extend: 'ml/style.css', //加载您的扩展样式

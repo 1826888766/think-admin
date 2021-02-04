@@ -385,7 +385,10 @@ layui.define([
         form.on("submit(mlSearch)", function (obj) {
             typeof that.search == "function" && that.search(obj);
             reloadTable({
-                where: obj.field
+                where: obj.field,
+                page: {
+                    curr: 1
+                }
             })
             return false;
         })
