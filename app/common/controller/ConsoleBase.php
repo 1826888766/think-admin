@@ -25,7 +25,7 @@ class ConsoleBase extends BaseController
     protected $param = [];
     protected $checkLogin = true;
     protected $checkAuth = true;
-    protected $iframe = 1;
+    protected $iframe = 0;
     protected $layout = "layout";
     protected $formField = [];
     // 模型
@@ -53,10 +53,11 @@ class ConsoleBase extends BaseController
      */
     public function initialize()
     {
+
         $this->initAuth();
         // 判断是否为iframe子页面
-
         if (!$this->request->isAjax()) {
+
             $this->initView();
             $this->initMenu();
         }
@@ -115,7 +116,14 @@ class ConsoleBase extends BaseController
         if ($this->checkLogin) {
             $this->checkLogin();
         }
-        $url = app('http')->getName() . "/" . Str::snake($this->request->controller()) . "/" . Str::snake($this->request->action());
+        $addon = $this->request->route('addon',false);
+
+        if($addon){
+            $url = $addon . "://" . Str::snake($this->request->controller()) . "/" . Str::snake($this->request->action());
+        }else{
+            $url = app('http')->getName() . "/" . Str::snake($this->request->controller()) . "/" . Str::snake($this->request->action());
+        }
+
         $currentMenu = Menu::getCurrentMenu($url);
         if ($this->checkAuth) {
             if (!$currentMenu) {
@@ -137,8 +145,10 @@ class ConsoleBase extends BaseController
             $this->redirect(url('login/index')->domain(true)->build());
         }
         $this->assign('user', $this->user);
-        define('ADMIN_ID', $this->user->id);
-
+        if(!defined("ADMIN_ID")){
+            define('ADMIN_ID', $this->user->id);
+        }
+        
     }
 
     /**

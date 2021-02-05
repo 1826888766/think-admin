@@ -28,7 +28,7 @@ use think\helper\Str;
 use think\facade\Config;
 use think\facade\View;
 
-abstract class AddonsBase
+abstract class AddonsBase extends ConsoleBase
 {
     // app 容器
     protected $app;
@@ -44,7 +44,6 @@ abstract class AddonsBase
     protected $addon_config;
     // 插件信息
     protected $addon_info;
-    protected $layout = "layout";
 
     /**
      * 插件构造函数
@@ -56,28 +55,22 @@ abstract class AddonsBase
     {
         $this->app = $app;
         $this->request = $app->request;
+        $this->view = new Think($app,config("view"));
         $this->name = $this->getName();
         $this->addon_path = $app->addons->getAddonsPath() . $this->name . DIRECTORY_SEPARATOR;
         $this->addon_config = "addon_{$this->name}_config";
         $this->addon_info = "addon_{$this->name}_info";
-        
-        $this->view = new Think($app,config("view"));
-        $is_iframe = $this->request->param('iframe', 0);
-        if ($is_iframe == 1) {
-            $this->layout = 'iframe';
-        }
-        $this->view->layout("console@".$this->layout);
         $this->view->config([
             'view_path' => $this->addon_path . 'view' . DIRECTORY_SEPARATOR,
         ]);
-
         // 控制器初始化
         $this->initialize();
     }
 
     // 初始化
-    protected function initialize()
+    public function initialize()
     {
+        parent::initialize();
     }
 
     /**
@@ -94,67 +87,6 @@ abstract class AddonsBase
         return $name;
     }
 
-    /**
-     * 加载模板输出
-     *
-     * @param string $template
-     * @param array  $vars 模板文件名
-     *
-     * @return false|mixed|string   模板输出变量
-     * @throws \think\Exception
-     */
-    protected function fetch($template = '', $vars = [])
-    {
-        return $this->view->fetch($template, $vars);
-    }
-
-    /**
-     * 渲染内容输出
-     *
-     * @access protected
-     *
-     * @param string $content 模板内容
-     * @param array  $vars    模板输出变量
-     *
-     * @return mixed
-     */
-    protected function display($content = '', $vars = [])
-    {
-        return $this->view->display($content, $vars);
-    }
-
-    /**
-     * 模板变量赋值
-     *
-     * @access protected
-     *
-     * @param mixed $name  要显示的模板变量
-     * @param mixed $value 变量的值
-     *
-     * @return $this
-     */
-    protected function assign($name, $value = '')
-    {
-        $this->view->assign([$name => $value]);
-
-        return $this;
-    }
-
-    /**
-     * 初始化模板引擎
-     *
-     * @access protected
-     *
-     * @param array|string $engine 引擎参数
-     *
-     * @return $this
-     */
-    protected function engine($engine)
-    {
-        $this->view->engine($engine);
-
-        return $this;
-    }
 
     /**
      * 插件基础信息

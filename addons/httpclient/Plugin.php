@@ -12,12 +12,6 @@ use app\common\model\Menu;
 class Plugin extends AddonsBase
 {
 
-    // 初始化
-    protected function initialize()
-    {
-       
-    }
-
     //安装插件方法
     public function install()
     {
