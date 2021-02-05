@@ -11,13 +11,13 @@
     <script>
         var iframe = '{$iframe|default=1}';
     </script>
-    {include file="template:layui" /}
+    {include file="console@template:layui" /}
 
 </head>
 <body class="layui-layout-body">
 <div class="layui-layout layui-layout-admin">
-    {include file="template:header" /}
-    {include file="template:side" /}
+    {include file="console@template:header" /}
+    {include file="console@template:side" /}
     <div class="layui-body">
         {switch $iframe}
         {case 1}
@@ -35,12 +35,12 @@
         {/case}
         {default /}
         <!-- 单页布局 -->
-        {include file="template:crumb" /}
+        {include file="console@template:crumb" /}
         <div>
             {__CONTENT__}
         </div>
         {/switch}
-        {include file="template:footer" /}
+        {include file="console@template:footer" /}
         <script>
             layui.use('ws', function () {
                 var ws = layui.ws;

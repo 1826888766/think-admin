@@ -15,8 +15,7 @@ class Plugin extends AddonsBase
     // 初始化
     protected function initialize()
     {
-        // TODO 初始化操作
-        $this->view->layout("layout");
+       
     }
 
     //安装插件方法

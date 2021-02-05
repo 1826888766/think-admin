@@ -29,10 +29,7 @@
         "zzstudio/think-jump": "^1.0",
         "topthink/think-helper": "^3.1",
         "topthink/think-captcha": "^3.0",
-      "ext-json": "*",
-        "topthink/think-worker": "^3.0",
-      "ext-curl": "*",
-        "ext-http": "*"
+        "topthink/think-worker": "^3.0"
     },
     "require-dev": {
         "symfony/var-dumper": "^4.2",
@@ -40,7 +37,8 @@
     },
     "autoload": {
         "psr-4": {
-            "app\\": "app"
+            "app\\": "app",
+            "core\\":"core"
         },
         "psr-0": {
             "": "extend/"

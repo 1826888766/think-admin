@@ -22,6 +22,7 @@ declare(strict_types=1);
 
 namespace app\common\controller;
 
+use core\view\Think;
 use think\App;
 use think\helper\Str;
 use think\facade\Config;
@@ -43,6 +44,7 @@ abstract class AddonsBase
     protected $addon_config;
     // 插件信息
     protected $addon_info;
+    protected $layout = "layout";
 
     /**
      * 插件构造函数
@@ -58,7 +60,13 @@ abstract class AddonsBase
         $this->addon_path = $app->addons->getAddonsPath() . $this->name . DIRECTORY_SEPARATOR;
         $this->addon_config = "addon_{$this->name}_config";
         $this->addon_info = "addon_{$this->name}_info";
-        $this->view = clone View::engine('Think');
+        
+        $this->view = new Think($app,config("view"));
+        $is_iframe = $this->request->param('iframe', 0);
+        if ($is_iframe == 1) {
+            $this->layout = 'iframe';
+        }
+        $this->view->layout("console@".$this->layout);
         $this->view->config([
             'view_path' => $this->addon_path . 'view' . DIRECTORY_SEPARATOR,
         ]);

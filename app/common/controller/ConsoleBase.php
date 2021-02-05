@@ -82,7 +82,7 @@ class ConsoleBase extends BaseController
         if ($is_iframe == 1) {
             $this->layout = 'iframe';
         }
-        $this->view->layout($this->layout);
+        $this->view->layout("console@".$this->layout);
         // 如果是layout布局并且不是iframe子窗口
         if ($this->iframe == 1 && $this->layout == "layout") {
             // 是iframe布局
@@ -210,7 +210,7 @@ class ConsoleBase extends BaseController
             'method' => 'POST',
             'data' => $data
         ]);
-        return $this->fetch('template:form');
+        return $this->fetch('console@template:form');
     }
 
     /**
