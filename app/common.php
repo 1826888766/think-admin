@@ -1,6 +1,7 @@
 <?php
 // 应用公共文件
 include __DIR__."/function.php";
+
 if (!function_exists('model')) {
     /**
      * 对一个值调用给定的闭包，然后返回该值
