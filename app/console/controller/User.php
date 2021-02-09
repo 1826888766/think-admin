@@ -130,7 +130,7 @@ class User extends ConsoleBase
             return Response::fail(-1,"用户不存在或已下线");
         }
         $value = $this->request->param('value');
-        $data = Gateway::sendToUid($id,$value);
+        $data = Gateway::sendToUid($id,json_encode(["message"=>$value,"type"=>"notice"]));
         return Response::success($data,"发送成功");
     }
 }
