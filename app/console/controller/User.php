@@ -9,6 +9,7 @@ use app\common\model\Role as RoleModel;
 use think\Model;
 use think\Request;
 use \app\common\model\User as UserModel;
+use GatewayWorker\Lib\Gateway;
 
 class User extends ConsoleBase
 {
@@ -120,5 +121,16 @@ class User extends ConsoleBase
         $auth = RoleModel::allAuth();
         $this->assign('auth', RoleModel::tree($auth, $menu_ids));
         return $this->fetch();
+    }
+
+    public function send($id)
+    {
+        $user = $this->model->where(['id' => $id])->find();
+        if(!$user || $user->getData("online") == 0){
+            return Response::fail(-1,"用户不存在或已下线");
+        }
+        $value = $this->request->param('value');
+        $data = Gateway::sendToUid($id,$value);
+        return Response::success($data,"发送成功");
     }
 }
