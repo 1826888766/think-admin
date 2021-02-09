@@ -65,8 +65,8 @@
     function send(id) {
         layer.prompt({
             formType: 2,
-            value: '请输入聊天内容',
-            title: '聊天',
+            value: '',
+            title: '请输入聊天内容',
             area: ['800px', '350px'] //自定义文本域宽高
         }, function (value, index, elem) {
             $.post("{:url('send')}", {
