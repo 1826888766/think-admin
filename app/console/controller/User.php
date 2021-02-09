@@ -126,7 +126,7 @@ class User extends ConsoleBase
     public function send($id)
     {
         $user = $this->model->where(['id' => $id])->find();
-        if(!$user || $user->getData("online") == 0){
+        if(!$user || $user->getOrigin("online") == 0){
             return Response::fail(-1,"用户不存在或已下线");
         }
         $value = $this->request->param('value');

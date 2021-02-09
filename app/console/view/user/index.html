@@ -55,7 +55,7 @@
                 {
                     'field': "field", 'title': "操作", btns: [
                         {title: "编辑", click: "layerOpen('{:url(\"edit\")}',{id:'{{d.id}}'},'编辑');",},
-                        {title: "发送消息", click: "send('{:url(\"send\")}',{id:'{{d.id}}'},'发送消息');",},
+                        {title: "发送消息", click: "send('{{d.id}}')",},
                         {title: "删除", class: "layui-btn-warm", click: "del('{{d.id}}');"}]
                 }
             ]]
